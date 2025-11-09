@@ -1,0 +1,40 @@
+
+# Application Name & Server Port
+spring.application.name=om_pay
+server.port=8083
+
+# Database Configuration (Use environment variables in production!)
+spring.datasource.url=${DATABASE_URL:jdbc:postgresql://localhost:5432/om_pay_db}
+spring.datasource.username=${DATABASE_USERNAME:your_username}
+spring.datasource.password=${DATABASE_PASSWORD:your_password}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+
+# JPA/Hibernate Configuration
+spring.jpa.hibernate.ddl-auto=update
+
+spring.jpa.show-sql=${JPA_SHOW_SQL:true}
+
+spring.jpa.properties.hibernate.format_sql=true
+
+# JWT Configuration (Use strong secrets in production!)
+jwt.secret=${JWT_SECRET:change_this_secret_key_in_production}
+jwt.expiration=${JWT_EXPIRATION:86400000}
+
+# CORS Configuration
+# Hardcoded in CorsConfig.java
+
+# Logging Configuration
+logging.level.root=INFO
+logging.level.om.example.om_pay=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+
+# File Logging
+logging.file.name=logs/om_pay.log
+logging.file.max-size=10MB
+logging.file.max-history=30
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
