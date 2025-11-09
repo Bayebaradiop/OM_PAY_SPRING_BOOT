@@ -2,7 +2,7 @@ services:
   # Web Service (API Spring Boot)
   - type: web
     name: om-pay-api
-    runtime: java
+    env: java
     plan: free
     region: oregon
     branch: main
