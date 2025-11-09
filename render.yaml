@@ -1,0 +1,34 @@
+services:
+  # Web Service (API Spring Boot)
+  - type: web
+    name: om-pay-api
+    runtime: java
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/om_pay-0.0.1-SNAPSHOT.jar
+    healthCheckPath: /actuator/health
+    envVars:
+      # Database Configuration (Use existing Render PostgreSQL)
+      - key: DATABASE_URL
+        value: jdbc:postgresql://dpg-d48fgf3uibrs7397ha10-a:5432/om_pay_db
+      - key: DATABASE_USERNAME
+        value: om_pay_db_user
+      - key: DATABASE_PASSWORD
+        value: PhVa2xi4B20BdgrxeyEvxiJF13SCRBh6
+      
+      # JWT Configuration
+      - key: JWT_SECRET
+        value: OmPaySecretKey2025VerySecureAndLongKeyForProductionUseOnlyWithExtraCharactersToMeet512BitsRequirement
+      - key: JWT_EXPIRATION
+        value: 86400000
+      
+      # Spring Profile
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      
+      # JPA Configuration
+      - key: JPA_SHOW_SQL
+        value: false
+
