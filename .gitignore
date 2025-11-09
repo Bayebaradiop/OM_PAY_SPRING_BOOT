@@ -41,7 +41,6 @@ logs/
 .env
 .env.local
 .env.*.local
-application-prod.properties
 application-local.properties
 src/main/resources/application.properties
 
