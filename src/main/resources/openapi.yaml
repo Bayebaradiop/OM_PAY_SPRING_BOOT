@@ -35,10 +35,10 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
+  - url: https://om-pay-spring-boot-1.onrender.com
+    description: Serveur de production (Render)
   - url: http://localhost:8083
-    description: Serveur de développement
-  - url: https://api.orangemoney.sn
-    description: Serveur de production
+    description: Serveur de développement local
 
 tags:
   - name: Authentification
