@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: om-pay-spring-boot
+    env: java
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/om_pay-0.0.1-SNAPSHOT.jar
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
