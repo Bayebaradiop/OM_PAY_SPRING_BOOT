@@ -72,6 +72,9 @@ public class SecurityConfig {
                     "/openapi.yaml"
                 ).permitAll()
                 
+                // Endpoints Actuator (Health Check pour Render)
+                .requestMatchers("/actuator/**").permitAll()
+                
                 // Endpoints admin
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
