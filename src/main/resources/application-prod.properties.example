@@ -1,0 +1,30 @@
+# ==============================================
+# PROFIL PRODUCTION (EXEMPLE)
+# ==============================================
+
+# Database Configuration - Render PostgreSQL
+spring.datasource.url=${DATABASE_URL}
+spring.datasource.username=${DATABASE_USERNAME}
+spring.datasource.password=${DATABASE_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+# JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+
+# Logs
+logging.level.root=WARN
+logging.level.om.example.om_pay=INFO
+logging.file.name=logs/om_pay-prod.log
+
+# Code secret expiration
+code.secret.expiration=15
+
+# Swagger - Désactivé en production
+springdoc.api-docs.enabled=false
+springdoc.swagger-ui.enabled=false
+
+# Actuator
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=when-authorized

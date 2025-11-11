@@ -1,0 +1,28 @@
+# ==============================================
+# CONFIGURATION PRINCIPALE (EXEMPLE)
+# ==============================================
+# Copiez ce fichier en "application.properties" et configurez selon votre environnement
+
+# Active profile (dev, prod)
+spring.profiles.active=${SPRING_PROFILES_ACTIVE:dev}
+
+# Application
+spring.application.name=om_pay
+server.port=${PORT:8083}
+
+# Jackson configuration
+spring.jackson.serialization.write-dates-as-timestamps=false
+spring.jackson.time-zone=UTC
+
+# JWT Configuration
+jwt.secret=${JWT_SECRET}
+jwt.expiration=${JWT_EXPIRATION:86400000}
+
+# Email Configuration - Brevo
+brevo.api.key=${BREVO_API_KEY}
+brevo.api.url=https://api.brevo.com/v3/smtp/email
+mail.from.address=${MAIL_FROM_ADDRESS}
+mail.from.name=${MAIL_FROM_NAME}
+
+# Code secret expiration (en minutes)
+code.secret.expiration=${CODE_SECRET_EXPIRATION:15}

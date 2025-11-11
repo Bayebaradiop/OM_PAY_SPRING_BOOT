@@ -1,0 +1,33 @@
+# ==============================================
+# PROFIL DÉVELOPPEMENT (EXEMPLE)
+# ==============================================
+
+# Database Configuration - PostgreSQL local
+spring.datasource.url=${DATABASE_URL:jdbc:postgresql://127.0.0.1:5433/om_pay_db}
+spring.datasource.username=${DATABASE_USERNAME:admin}
+spring.datasource.password=${DATABASE_PASSWORD:admin123}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+
+# JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logs
+logging.level.root=INFO
+logging.level.om.example.om_pay=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.file.name=logs/om_pay-dev.log
+
+# Code secret - Durée plus longue en dev
+code.secret.expiration=60
+
+# Swagger
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.path=/swagger-ui.html
+
+# Actuator
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
