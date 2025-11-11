@@ -12,6 +12,7 @@ import om.example.om_pay.model.enums.TypeTransaction;
 import om.example.om_pay.repository.CompteRepository;
 import om.example.om_pay.repository.TransactionRepository;
 import om.example.om_pay.repository.UtilisateurRepository;
+import om.example.om_pay.service.QRCodeResolverService;
 import om.example.om_pay.service.baseservice.BaseTransactionService;
 import om.example.om_pay.service.calculation.FraisCalculService;
 import om.example.om_pay.service.calculation.PlafondService;
@@ -30,6 +31,8 @@ import om.example.om_pay.validations.CompteValidationService;
 @Service
 public class RetraitStrategy extends BaseTransactionService {
     
+    private final QRCodeResolverService qrCodeResolverService;
+    
     public RetraitStrategy(
             TransactionRepository transactionRepository,
             CompteRepository compteRepository,
@@ -37,10 +40,12 @@ public class RetraitStrategy extends BaseTransactionService {
             CompteValidationService compteValidationService,
             FraisCalculService fraisCalculService,
             PlafondService plafondService,
-            ReferenceGeneratorService referenceGeneratorService) {
+            ReferenceGeneratorService referenceGeneratorService,
+            QRCodeResolverService qrCodeResolverService) {
         super(transactionRepository, compteRepository, utilisateurRepository,
               compteValidationService, fraisCalculService, plafondService,
               referenceGeneratorService);
+        this.qrCodeResolverService = qrCodeResolverService;
     }
     
     @Override
@@ -60,9 +65,17 @@ public class RetraitStrategy extends BaseTransactionService {
         verifierRoleDistributeur(distributeur);
         
         // 3. Récupérer et valider les comptes
-        Compte compteClient = compteValidationService.getCompteByTelephone(
-            request.getTelephoneClient()
-        );
+        // Résoudre le compte client via QR code ou téléphone
+        Compte compteClient;
+        boolean isQRUsed = false;
+        if (request.getCodeQr() != null && !request.getCodeQr().isBlank()) {
+            compteClient = qrCodeResolverService.resoudreQRCodeVersCompte(request.getCodeQr());
+            isQRUsed = true;
+        } else {
+            compteClient = compteValidationService.getCompteByTelephone(
+                request.getTelephoneClient()
+            );
+        }
         Compte compteDistributeur = compteValidationService.getComptePrincipal(distributeur);
         
         // 4. Vérifier le solde du client (pas de frais pour retrait)
@@ -82,6 +95,11 @@ public class RetraitStrategy extends BaseTransactionService {
             distributeur,
             null
         );
+        
+        // 7. Incrémenter le compteur d'utilisation du QR code si utilisé
+        if (isQRUsed) {
+            qrCodeResolverService.incrementerUtilisation(request.getCodeQr());
+        }
         
         return TransactionResponse.fromTransaction(transaction);
     }

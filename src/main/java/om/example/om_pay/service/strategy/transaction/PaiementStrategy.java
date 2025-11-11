@@ -15,6 +15,7 @@ import om.example.om_pay.repository.CompteRepository;
 import om.example.om_pay.repository.MarchandRepository;
 import om.example.om_pay.repository.TransactionRepository;
 import om.example.om_pay.repository.UtilisateurRepository;
+import om.example.om_pay.service.QRCodeResolverService;
 import om.example.om_pay.service.baseservice.BaseTransactionService;
 import om.example.om_pay.service.calculation.FraisCalculService;
 import om.example.om_pay.service.calculation.PlafondService;
@@ -34,6 +35,7 @@ import om.example.om_pay.validations.CompteValidationService;
 public class PaiementStrategy extends BaseTransactionService {
     
     private final MarchandRepository marchandRepository;
+    private final QRCodeResolverService qrCodeResolverService;
     
     public PaiementStrategy(
             TransactionRepository transactionRepository,
@@ -43,11 +45,13 @@ public class PaiementStrategy extends BaseTransactionService {
             FraisCalculService fraisCalculService,
             PlafondService plafondService,
             ReferenceGeneratorService referenceGeneratorService,
-            MarchandRepository marchandRepository) {
+            MarchandRepository marchandRepository,
+            QRCodeResolverService qrCodeResolverService) {
         super(transactionRepository, compteRepository, utilisateurRepository,
               compteValidationService, fraisCalculService, plafondService,
               referenceGeneratorService);
         this.marchandRepository = marchandRepository;
+        this.qrCodeResolverService = qrCodeResolverService;
     }
     
     @Override
@@ -66,9 +70,20 @@ public class PaiementStrategy extends BaseTransactionService {
         // 2. Récupérer le compte du client
         Compte compteClient = compteValidationService.getComptePrincipal(client);
         
-        // 3. Récupérer le marchand par code
-        Marchand marchand = marchandRepository.findByCodeMarchand(request.getCodeMarchand())
-                .orElseThrow(() -> new ResourceNotFoundException("Marchand non trouvé"));
+        // 3. Récupérer le marchand par code ou QR code
+        Marchand marchand;
+        boolean isQRUsed = false;
+        if (request.getCodeQr() != null && !request.getCodeQr().isBlank()) {
+            // Résoudre le QR code vers un compte, puis récupérer le marchand par téléphone
+            Compte compteMarchand = qrCodeResolverService.resoudreQRCodeVersCompte(request.getCodeQr());
+            Utilisateur utilisateurMarchand = compteMarchand.getUtilisateur();
+            marchand = marchandRepository.findByNumeroMarchand(utilisateurMarchand.getTelephone())
+                    .orElseThrow(() -> new ResourceNotFoundException("Marchand non trouvé pour ce QR code"));
+            isQRUsed = true;
+        } else {
+            marchand = marchandRepository.findByCodeMarchand(request.getCodeMarchand())
+                    .orElseThrow(() -> new ResourceNotFoundException("Marchand non trouvé"));
+        }
         
         // 4. Calculer les frais et montant total
         FraisCalculService.FraisResult fraisResult = fraisCalculService.calculerFraisEtTotal(
@@ -93,6 +108,11 @@ public class PaiementStrategy extends BaseTransactionService {
             null,
             marchand
         );
+        
+        // 8. Incrémenter le compteur d'utilisation du QR code si utilisé
+        if (isQRUsed) {
+            qrCodeResolverService.incrementerUtilisation(request.getCodeQr());
+        }
         
         return TransactionResponse.fromTransaction(transaction);
     }

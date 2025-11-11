@@ -202,7 +202,30 @@ public class DataSeeder implements CommandLineRunner {
     private void seedMarchands() {
         System.out.println("\n→ Création des marchands...");
 
-        // Marchand 1
+        // Marchand 1 - Boutique Chez Amadou
+        // D'abord créer l'utilisateur et le compte
+        Utilisateur userMarchand1 = new Utilisateur();
+        userMarchand1.setNom("Diallo");
+        userMarchand1.setPrenom("Amadou");
+        userMarchand1.setTelephone("771112233");
+        userMarchand1.setEmail("amadou@shop.sn");
+        userMarchand1.setMotDePasse(passwordEncoder.encode("Marchand123!"));
+        userMarchand1.setCodePin(passwordEncoder.encode("123456"));
+        userMarchand1.setRole(Role.MARCHAND);
+        userMarchand1.setStatut(Statut.ACTIF);
+        userMarchand1.setPremiereConnexion(false);
+        userMarchand1.setDateCreation(LocalDateTime.now());
+        userMarchand1 = utilisateurRepository.save(userMarchand1);
+
+        Compte compteMarchand1 = new Compte();
+        compteMarchand1.setNumeroCompte("OM" + System.currentTimeMillis() % 10000000000L);
+        compteMarchand1.setSolde(0.0); // Les marchands commencent à 0
+        compteMarchand1.setTypeCompte(TypeCompte.PRINCIPAL);
+        compteMarchand1.setStatut(Statut.ACTIF);
+        compteMarchand1.setUtilisateur(userMarchand1);
+        compteMarchand1.setDateCreation(LocalDateTime.now());
+        compteRepository.save(compteMarchand1);
+
         Marchand marchand1 = new Marchand();
         marchand1.setNomCommercial("Boutique Chez Amadou");
         marchand1.setNumeroMarchand("771112233");
@@ -215,9 +238,31 @@ public class DataSeeder implements CommandLineRunner {
         marchand1.setDateCreation(LocalDateTime.now());
         marchandRepository.save(marchand1);
 
-        System.out.println("  ✓ Marchand: Boutique Chez Amadou (SHOP001) - Commission: 1.5%");
+        System.out.println("  ✓ Marchand: Boutique Chez Amadou (SHOP001) - Commission: 1.5% - QR Code auto-généré");
 
-        // Marchand 2
+        // Marchand 2 - Pharmacie Yaye Fatou
+        Utilisateur userMarchand2 = new Utilisateur();
+        userMarchand2.setNom("Sow");
+        userMarchand2.setPrenom("Fatou");
+        userMarchand2.setTelephone("775556789");
+        userMarchand2.setEmail("contact@pharmacie-fatou.sn");
+        userMarchand2.setMotDePasse(passwordEncoder.encode("Marchand456!"));
+        userMarchand2.setCodePin(passwordEncoder.encode("123456"));
+        userMarchand2.setRole(Role.MARCHAND);
+        userMarchand2.setStatut(Statut.ACTIF);
+        userMarchand2.setPremiereConnexion(false);
+        userMarchand2.setDateCreation(LocalDateTime.now());
+        userMarchand2 = utilisateurRepository.save(userMarchand2);
+
+        Compte compteMarchand2 = new Compte();
+        compteMarchand2.setNumeroCompte("OM" + (System.currentTimeMillis() + 1) % 10000000000L);
+        compteMarchand2.setSolde(0.0);
+        compteMarchand2.setTypeCompte(TypeCompte.PRINCIPAL);
+        compteMarchand2.setStatut(Statut.ACTIF);
+        compteMarchand2.setUtilisateur(userMarchand2);
+        compteMarchand2.setDateCreation(LocalDateTime.now());
+        compteRepository.save(compteMarchand2);
+
         Marchand marchand2 = new Marchand();
         marchand2.setNomCommercial("Pharmacie Yaye Fatou");
         marchand2.setNumeroMarchand("775556789");
@@ -230,9 +275,31 @@ public class DataSeeder implements CommandLineRunner {
         marchand2.setDateCreation(LocalDateTime.now());
         marchandRepository.save(marchand2);
 
-        System.out.println("  ✓ Marchand: Pharmacie Yaye Fatou (PHARM001) - Commission: 2.0%");
+        System.out.println("  ✓ Marchand: Pharmacie Yaye Fatou (PHARM001) - Commission: 2.0% - QR Code auto-généré");
 
-        // Marchand 3
+        // Marchand 3 - Supermarché Al Baraka
+        Utilisateur userMarchand3 = new Utilisateur();
+        userMarchand3.setNom("Ba");
+        userMarchand3.setPrenom("Alioune");
+        userMarchand3.setTelephone("770001122");
+        userMarchand3.setEmail("info@albaraka.sn");
+        userMarchand3.setMotDePasse(passwordEncoder.encode("Marchand789!"));
+        userMarchand3.setCodePin(passwordEncoder.encode("123456"));
+        userMarchand3.setRole(Role.MARCHAND);
+        userMarchand3.setStatut(Statut.ACTIF);
+        userMarchand3.setPremiereConnexion(false);
+        userMarchand3.setDateCreation(LocalDateTime.now());
+        userMarchand3 = utilisateurRepository.save(userMarchand3);
+
+        Compte compteMarchand3 = new Compte();
+        compteMarchand3.setNumeroCompte("OM" + (System.currentTimeMillis() + 2) % 10000000000L);
+        compteMarchand3.setSolde(0.0);
+        compteMarchand3.setTypeCompte(TypeCompte.PRINCIPAL);
+        compteMarchand3.setStatut(Statut.ACTIF);
+        compteMarchand3.setUtilisateur(userMarchand3);
+        compteMarchand3.setDateCreation(LocalDateTime.now());
+        compteRepository.save(compteMarchand3);
+
         Marchand marchand3 = new Marchand();
         marchand3.setNomCommercial("Supermarché Al Baraka");
         marchand3.setNumeroMarchand("770001122");
@@ -245,7 +312,7 @@ public class DataSeeder implements CommandLineRunner {
         marchand3.setDateCreation(LocalDateTime.now());
         marchandRepository.save(marchand3);
 
-        System.out.println("  ✓ Marchand: Supermarché Al Baraka (SUPER001) - Commission: 1.0%");
+        System.out.println("  ✓ Marchand: Supermarché Al Baraka (SUPER001) - Commission: 1.0% - QR Code auto-généré");
     }
 
     private void seedAdmin() {

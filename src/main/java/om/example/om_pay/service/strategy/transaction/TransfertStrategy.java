@@ -12,6 +12,7 @@ import om.example.om_pay.model.enums.TypeTransaction;
 import om.example.om_pay.repository.CompteRepository;
 import om.example.om_pay.repository.TransactionRepository;
 import om.example.om_pay.repository.UtilisateurRepository;
+import om.example.om_pay.service.QRCodeResolverService;
 import om.example.om_pay.service.baseservice.BaseTransactionService;
 import om.example.om_pay.service.calculation.FraisCalculService;
 import om.example.om_pay.service.calculation.PlafondService;
@@ -30,6 +31,8 @@ import om.example.om_pay.validations.CompteValidationService;
 @Service
 public class TransfertStrategy extends BaseTransactionService {
     
+    private final QRCodeResolverService qrCodeResolverService;
+    
     public TransfertStrategy(
             TransactionRepository transactionRepository,
             CompteRepository compteRepository,
@@ -37,10 +40,12 @@ public class TransfertStrategy extends BaseTransactionService {
             CompteValidationService compteValidationService,
             FraisCalculService fraisCalculService,
             PlafondService plafondService,
-            ReferenceGeneratorService referenceGeneratorService) {
+            ReferenceGeneratorService referenceGeneratorService,
+            QRCodeResolverService qrCodeResolverService) {
         super(transactionRepository, compteRepository, utilisateurRepository,
               compteValidationService, fraisCalculService, plafondService,
               referenceGeneratorService);
+        this.qrCodeResolverService = qrCodeResolverService;
     }
     
     @Override
@@ -58,9 +63,18 @@ public class TransfertStrategy extends BaseTransactionService {
         
         // 2. Récupérer et valider les comptes
         Compte compteExpediteur = compteValidationService.getComptePrincipal(expediteur);
-        Compte compteDestinataire = compteValidationService.getCompteByTelephone(
-            request.getTelephoneDestinataire()
-        );
+        
+        // Résoudre le compte destinataire via QR code ou téléphone
+        Compte compteDestinataire;
+        boolean isQRUsed = false;
+        if (request.getCodeQrDestinataire() != null && !request.getCodeQrDestinataire().isBlank()) {
+            compteDestinataire = qrCodeResolverService.resoudreQRCodeVersCompte(request.getCodeQrDestinataire());
+            isQRUsed = true;
+        } else {
+            compteDestinataire = compteValidationService.getCompteByTelephone(
+                request.getTelephoneDestinataire()
+            );
+        }
         compteValidationService.verifierPasAutoTransfert(compteExpediteur, compteDestinataire);
         
         // 3. Calculer les frais et le montant total
@@ -94,6 +108,11 @@ public class TransfertStrategy extends BaseTransactionService {
             null,
             null
         );
+        
+        // 8. Incrémenter le compteur d'utilisation du QR code si utilisé
+        if (isQRUsed) {
+            qrCodeResolverService.incrementerUtilisation(request.getCodeQrDestinataire());
+        }
         
         return TransactionResponse.fromTransaction(transaction);
     }

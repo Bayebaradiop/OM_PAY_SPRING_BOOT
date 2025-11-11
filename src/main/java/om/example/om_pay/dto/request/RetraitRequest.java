@@ -1,15 +1,18 @@
 package om.example.om_pay.dto.request;
 
 import om.example.om_pay.validations.annotations.ValidMontant;
-import om.example.om_pay.validations.annotations.ValidTelephone;
 
 public class RetraitRequest {
 
-    @ValidTelephone
     private String telephoneClient;
+    
+    // NOUVEAU : Support du QR code comme alternative au téléphone
+    private String codeQr;
 
     @ValidMontant(min = 100, max = 500000)
     private Double montant;
+    
+    private String description;
 
     // Constructeurs
     public RetraitRequest() {
@@ -35,5 +38,29 @@ public class RetraitRequest {
 
     public void setMontant(Double montant) {
         this.montant = montant;
+    }
+
+    public String getCodeQr() {
+        return codeQr;
+    }
+
+    public void setCodeQr(String codeQr) {
+        this.codeQr = codeQr;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    /**
+     * Validation : au moins un des deux doit être fourni (téléphone OU QR code)
+     */
+    public boolean isValid() {
+        return (telephoneClient != null && !telephoneClient.isBlank()) 
+            || (codeQr != null && !codeQr.isBlank());
     }
 }
