@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import om.example.om_pay.model.enums.Role;
-import om.example.om_pay.validations.annotations.ValidCodePin;
 import om.example.om_pay.validations.annotations.ValidTelephone;
 
 @Data
@@ -31,7 +30,8 @@ public class RegisterRequest {
     @NotBlank(message = "{error.validation.motDePasse.required}")
     private String motDePasse;
 
-    @ValidCodePin
+    // Code PIN optionnel - peut être défini plus tard via un endpoint dédié
+    // @ValidCodePin - Validation désactivée, le code PIN n'est plus requis
     private String codePin;
 
     @NotNull(message = "{error.validation.role.required}")

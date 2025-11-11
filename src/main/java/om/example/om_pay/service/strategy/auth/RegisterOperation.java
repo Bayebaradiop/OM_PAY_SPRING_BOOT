@@ -132,7 +132,12 @@ public class RegisterOperation extends BaseAuthOperation implements IAuthOperati
         utilisateur.setTelephone(request.getTelephone());
         utilisateur.setEmail(request.getEmail());
         utilisateur.setMotDePasse(encoderMotDePasse(request.getMotDePasse()));
-        utilisateur.setCodePin(encoderMotDePasse(request.getCodePin()));
+        
+        // Code PIN optionnel - peut être null
+        if (request.getCodePin() != null && !request.getCodePin().trim().isEmpty()) {
+            utilisateur.setCodePin(encoderMotDePasse(request.getCodePin()));
+        }
+        
         utilisateur.setRole(request.getRole());
         utilisateur.setStatut(Statut.ACTIF);
         utilisateur.setDateCreation(LocalDateTime.now());
