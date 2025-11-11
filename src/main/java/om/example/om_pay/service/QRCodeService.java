@@ -28,7 +28,6 @@ import om.example.om_pay.model.enums.TypeCompte;
 import om.example.om_pay.repository.CompteRepository;
 import om.example.om_pay.repository.QRCodeRepository;
 import om.example.om_pay.repository.UtilisateurRepository;
-import om.example.om_pay.service.baseservice.BaseTransactionService;
 
 /**
  * Service pour gérer les QR codes
@@ -40,7 +39,6 @@ public class QRCodeService {
     private final QRCodeRepository qrCodeRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final CompteRepository compteRepository;
-    private final BaseTransactionService transactionService;
 
     /**
      * Récupérer le QR code de l'utilisateur connecté
