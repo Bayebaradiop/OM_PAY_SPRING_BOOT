@@ -1,14 +1,17 @@
 package om.example.om_pay.service.impl;
 
 import org.springframework.stereotype.Service;
+
 import om.example.om_pay.dto.request.ChangePasswordRequest;
 import om.example.om_pay.dto.request.LoginRequest;
 import om.example.om_pay.dto.request.RegisterRequest;
 import om.example.om_pay.dto.request.VerifyCodeSecretRequest;
 import om.example.om_pay.dto.response.AuthResponse;
+import om.example.om_pay.dto.response.ProfilCompletResponse;
 import om.example.om_pay.model.enums.TypeAuthOperation;
 import om.example.om_pay.repository.UtilisateurRepository;
 import om.example.om_pay.service.IAuthService;
+import om.example.om_pay.service.ProfilService;
 import om.example.om_pay.service.factory.AuthOperationFactory;
 import om.example.om_pay.service.strategy.auth.IAuthOperation;
 
@@ -25,12 +28,15 @@ public class AuthServiceImpl implements IAuthService {
 
     private final AuthOperationFactory operationFactory;
     private final UtilisateurRepository utilisateurRepository;
+    private final ProfilService profilService;
 
     public AuthServiceImpl(
             AuthOperationFactory operationFactory,
-            UtilisateurRepository utilisateurRepository) {
+            UtilisateurRepository utilisateurRepository,
+            ProfilService profilService) {
         this.operationFactory = operationFactory;
         this.utilisateurRepository = utilisateurRepository;
+        this.profilService = profilService;
     }
 
     @Override
@@ -83,6 +89,11 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public boolean emailExists(String email) {
         return utilisateurRepository.existsByEmail(email);
+    }
+    
+    @Override
+    public ProfilCompletResponse getProfilComplet() {
+        return profilService.getProfilComplet();
     }
     
     private <T, R> IAuthOperation<T, R> getOperation(TypeAuthOperation type) {

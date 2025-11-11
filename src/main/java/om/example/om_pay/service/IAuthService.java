@@ -26,4 +26,6 @@ public interface IAuthService {
     boolean telephoneExists(String telephone);
 
     boolean emailExists(String email);
+    
+    om.example.om_pay.dto.response.ProfilCompletResponse getProfilComplet();
 }

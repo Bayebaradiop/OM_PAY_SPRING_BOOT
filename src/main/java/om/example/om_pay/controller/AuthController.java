@@ -2,8 +2,6 @@ package om.example.om_pay.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,17 +9,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import om.example.om_pay.config.ApiResponse;
 import om.example.om_pay.dto.request.ChangePasswordRequest;
 import om.example.om_pay.dto.request.LoginRequest;
 import om.example.om_pay.dto.request.RegisterRequest;
 import om.example.om_pay.dto.request.VerifyCodeSecretRequest;
 import om.example.om_pay.dto.response.AuthResponse;
-import om.example.om_pay.dto.response.UtilisateurResponse;
-import om.example.om_pay.service.IAuthService;
-import om.example.om_pay.model.Utilisateur;
+import om.example.om_pay.dto.response.ProfilCompletResponse;
 import om.example.om_pay.repository.UtilisateurRepository;
+import om.example.om_pay.service.IAuthService;
 import om.example.om_pay.utils.CookieUtil;
 
 /**
@@ -96,25 +96,20 @@ public class AuthController {
 
    
     @GetMapping("/me")
-    public ResponseEntity<UtilisateurResponse> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String telephone = authentication.getName();
+    @Operation(
+        summary = "Récupérer le profil complet de l'utilisateur connecté",
+        description = "Retourne toutes les informations de l'utilisateur : compte, solde, statistiques et dernières transactions",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<ApiResponse<ProfilCompletResponse>> getProfilComplet() {
+        ProfilCompletResponse profil = authService.getProfilComplet();
         
-        Utilisateur utilisateur = utilisateurRepository.findByTelephone(telephone)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        ApiResponse<ProfilCompletResponse> response = ApiResponse.success(
+            "Profil récupéré avec succès",
+            profil
+        );
         
-        // Mapper vers DTO pour éviter lazy loading exception
-        UtilisateurResponse userResponse = new UtilisateurResponse();
-        userResponse.setId(utilisateur.getId());
-        userResponse.setNom(utilisateur.getNom());
-        userResponse.setPrenom(utilisateur.getPrenom());
-        userResponse.setTelephone(utilisateur.getTelephone());
-        userResponse.setEmail(utilisateur.getEmail());
-        userResponse.setRole(utilisateur.getRole());
-        userResponse.setStatut(utilisateur.getStatut());
-        userResponse.setDateCreation(utilisateur.getDateCreation());
-        
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(response);
     }
 
   

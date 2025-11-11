@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import om.example.om_pay.model.Compte;
+import om.example.om_pay.model.Utilisateur;
+import om.example.om_pay.model.enums.TypeCompte;
 
 @Repository
 public interface CompteRepository extends JpaRepository<Compte, Long> {
@@ -17,4 +19,6 @@ public interface CompteRepository extends JpaRepository<Compte, Long> {
     boolean existsByNumeroCompte(String numeroCompte);
 
     List<Compte> findByUtilisateurId(Long utilisateurId);
+    
+    Optional<Compte> findByUtilisateurAndTypeCompte(Utilisateur utilisateur, TypeCompte typeCompte);
 }

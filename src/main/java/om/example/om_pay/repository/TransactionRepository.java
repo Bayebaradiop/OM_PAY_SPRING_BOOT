@@ -130,4 +130,24 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
            "WHERE t.typeTransaction = :typeTransaction " +
            "ORDER BY t.dateTransaction DESC")
     List<TransactionSummaryProjection> findSummaryByType(@Param("typeTransaction") TypeTransaction typeTransaction);
+    
+    // ========== MÉTHODES POUR PROFIL COMPLET ==========
+    
+    /**
+     * Récupère toutes les transactions liées à un compte (expéditeur ou destinataire)
+     */
+    @Query("SELECT t FROM Transaction t WHERE t.compteExpediteur = :compte OR t.compteDestinataire = :compte")
+    List<Transaction> findByCompteExpediteurOrCompteDestinataire(
+        @Param("compte") om.example.om_pay.model.Compte compte,
+        @Param("compte") om.example.om_pay.model.Compte compteDestinataire
+    );
+    
+    /**
+     * Récupère les 5 dernières transactions d'un compte
+     */
+    @Query("SELECT t FROM Transaction t WHERE t.compteExpediteur = :compte OR t.compteDestinataire = :compte ORDER BY t.dateTransaction DESC")
+    List<Transaction> findTop5ByCompteExpediteurOrCompteDestinataireOrderByDateCreationDesc(
+        @Param("compte") om.example.om_pay.model.Compte compteExpediteur,
+        @Param("compte") om.example.om_pay.model.Compte compteDestinataire
+    );
 }
