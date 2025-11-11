@@ -136,6 +136,28 @@ public abstract class BaseTransactionService implements ITransactionStrategy {
     }
     
     /**
+     * Débite un montant du compte
+     * 
+     * @param compte - Compte à débiter
+     * @param montant - Montant à débiter
+     */
+    protected void debiterCompte(Compte compte, Double montant) {
+        compte.setSolde(compte.getSolde() - montant);
+        compteRepository.save(compte);
+    }
+    
+    /**
+     * Crédite un montant sur le compte
+     * 
+     * @param compte - Compte à créditer
+     * @param montant - Montant à créditer
+     */
+    protected void crediterCompte(Compte compte, Double montant) {
+        compte.setSolde(compte.getSolde() + montant);
+        compteRepository.save(compte);
+    }
+    
+    /**
      * Vérifie que l'utilisateur a le rôle DISTRIBUTEUR
      * 
      * @param utilisateur - Utilisateur à vérifier

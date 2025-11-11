@@ -68,13 +68,8 @@ public class RetraitStrategy extends BaseTransactionService {
         // 4. Vérifier le solde du client (pas de frais pour retrait)
         compteValidationService.verifierSolde(compteClient, request.getMontant());
         
-        // 5. Effectuer le retrait
-        effectuerTransfertComptes(
-            compteClient,
-            compteDistributeur,
-            request.getMontant(),
-            request.getMontant()
-        );
+        // 5. Effectuer le retrait (seul le client perd de l'argent, le distributeur donne du liquide)
+        debiterCompte(compteClient, request.getMontant());
         
         // 6. Créer et sauvegarder la transaction
         Transaction transaction = creerTransaction(
