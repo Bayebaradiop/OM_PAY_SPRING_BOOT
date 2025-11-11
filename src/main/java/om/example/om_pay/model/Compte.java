@@ -14,11 +14,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import om.example.om_pay.model.enums.Statut;
 import om.example.om_pay.model.enums.TypeCompte;
 
 @Entity
 @Table(name = "compte")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Compte {
 
     @Id
@@ -53,95 +59,4 @@ public class Compte {
 
     @OneToMany(mappedBy = "compteDestinataire")
     private List<Transaction> transactionsRecues;
-
-    public Compte() {}
-
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNumeroCompte() {
-        return numeroCompte;
-    }
-
-    public void setNumeroCompte(String numeroCompte) {
-        this.numeroCompte = numeroCompte;
-    }
-
-    public Double getSolde() {
-        return solde;
-    }
-
-    public void setSolde(Double solde) {
-        this.solde = solde;
-    }
-
-    public String getDevise() {
-        return devise;
-    }
-
-    public void setDevise(String devise) {
-        this.devise = devise;
-    }
-
-    public TypeCompte getTypeCompte() {
-        return typeCompte;
-    }
-
-    public void setTypeCompte(TypeCompte typeCompte) {
-        this.typeCompte = typeCompte;
-    }
-
-    public Statut getStatut() {
-        return statut;
-    }
-
-    public void setStatut(Statut statut) {
-        this.statut = statut;
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public LocalDateTime getDateModification() {
-        return dateModification;
-    }
-
-    public void setDateModification(LocalDateTime dateModification) {
-        this.dateModification = dateModification;
-    }
-
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
-    }
-
-    public void setUtilisateur(Utilisateur utilisateur) {
-        this.utilisateur = utilisateur;
-    }
-
-    public List<Transaction> getTransactionsEnvoyees() {
-        return transactionsEnvoyees;
-    }
-
-    public void setTransactionsEnvoyees(List<Transaction> transactionsEnvoyees) {
-        this.transactionsEnvoyees = transactionsEnvoyees;
-    }
-
-    public List<Transaction> getTransactionsRecues() {
-        return transactionsRecues;
-    }
-
-    public void setTransactionsRecues(List<Transaction> transactionsRecues) {
-        this.transactionsRecues = transactionsRecues;
-    }
 }

@@ -1,8 +1,14 @@
 package om.example.om_pay.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import om.example.om_pay.validations.annotations.ValidTelephone;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequest {
 
     @ValidTelephone
@@ -10,30 +16,4 @@ public class LoginRequest {
 
     @NotBlank(message = "{error.validation.motDePasse.required}")
     private String motDePasse;
-
-    // Constructeurs
-    public LoginRequest() {
-    }
-
-    public LoginRequest(String telephone, String motDePasse) {
-        this.telephone = telephone;
-        this.motDePasse = motDePasse;
-    }
-
-    // Getters et Setters
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getMotDePasse() {
-        return motDePasse;
-    }
-
-    public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
-    }
 }

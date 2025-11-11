@@ -1,4 +1,4 @@
-package om.example.om_pay.dto.response;
+package om.example.om_pay.config;
 
 import java.time.LocalDateTime;
 

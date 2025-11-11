@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -22,8 +21,11 @@ import om.example.om_pay.config.JwtConfig;
 @Component
 public class JwtTokenProvider {
 
-    @Autowired
-    private JwtConfig jwtConfig;
+    private final JwtConfig jwtConfig;
+
+    public JwtTokenProvider(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+    }
 
     /**
      * Génère un token JWT pour un utilisateur

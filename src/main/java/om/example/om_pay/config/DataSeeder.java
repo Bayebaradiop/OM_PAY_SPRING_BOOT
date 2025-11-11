@@ -2,7 +2,6 @@ package om.example.om_pay.config;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,17 +19,22 @@ import om.example.om_pay.repository.UtilisateurRepository;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    @Autowired
-    private UtilisateurRepository utilisateurRepository;
+    private final UtilisateurRepository utilisateurRepository;
+    private final CompteRepository compteRepository;
+    private final MarchandRepository marchandRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CompteRepository compteRepository;
-
-    @Autowired
-    private MarchandRepository marchandRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public DataSeeder(
+        UtilisateurRepository utilisateurRepository,
+        CompteRepository compteRepository,
+        MarchandRepository marchandRepository,
+        PasswordEncoder passwordEncoder
+    ) {
+        this.utilisateurRepository = utilisateurRepository;
+        this.compteRepository = compteRepository;
+        this.marchandRepository = marchandRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -67,8 +71,10 @@ public class DataSeeder implements CommandLineRunner {
         client1.setTelephone("771234567");
         client1.setEmail("moussa@test.com");
         client1.setMotDePasse(passwordEncoder.encode("Password123!"));
+        client1.setCodePin(passwordEncoder.encode("123456"));
         client1.setRole(Role.CLIENT);
         client1.setStatut(Statut.ACTIF);
+        client1.setPremiereConnexion(false); // Compte déjà activé
         client1.setDateCreation(LocalDateTime.now());
         client1 = utilisateurRepository.save(client1);
 
@@ -91,8 +97,10 @@ public class DataSeeder implements CommandLineRunner {
         client2.setTelephone("779876543");
         client2.setEmail("fatou@test.com");
         client2.setMotDePasse(passwordEncoder.encode("Pass123!"));
+        client2.setCodePin(passwordEncoder.encode("123456"));
         client2.setRole(Role.CLIENT);
         client2.setStatut(Statut.ACTIF);
+        client2.setPremiereConnexion(false);
         client2.setDateCreation(LocalDateTime.now());
         client2 = utilisateurRepository.save(client2);
 
@@ -115,8 +123,10 @@ public class DataSeeder implements CommandLineRunner {
         client3.setTelephone("776543210");
         client3.setEmail("cheikh@test.com");
         client3.setMotDePasse(passwordEncoder.encode("Client123!"));
+        client3.setCodePin(passwordEncoder.encode("123456"));
         client3.setRole(Role.CLIENT);
         client3.setStatut(Statut.ACTIF);
+        client3.setPremiereConnexion(false);
         client3.setDateCreation(LocalDateTime.now());
         client3 = utilisateurRepository.save(client3);
 
@@ -143,8 +153,10 @@ public class DataSeeder implements CommandLineRunner {
         distributeur1.setTelephone("775551234");
         distributeur1.setEmail("abdou@test.com");
         distributeur1.setMotDePasse(passwordEncoder.encode("Distrib123!"));
+        distributeur1.setCodePin(passwordEncoder.encode("123456"));
         distributeur1.setRole(Role.DISTRIBUTEUR);
         distributeur1.setStatut(Statut.ACTIF);
+        distributeur1.setPremiereConnexion(false);
         distributeur1.setDateCreation(LocalDateTime.now());
         distributeur1 = utilisateurRepository.save(distributeur1);
 
@@ -167,8 +179,10 @@ public class DataSeeder implements CommandLineRunner {
         distributeur2.setTelephone("778889999");
         distributeur2.setEmail("mariama@distrib.com");
         distributeur2.setMotDePasse(passwordEncoder.encode("Distrib456!"));
+        distributeur2.setCodePin(passwordEncoder.encode("123456"));
         distributeur2.setRole(Role.DISTRIBUTEUR);
         distributeur2.setStatut(Statut.ACTIF);
+        distributeur2.setPremiereConnexion(false);
         distributeur2.setDateCreation(LocalDateTime.now());
         distributeur2 = utilisateurRepository.save(distributeur2);
 

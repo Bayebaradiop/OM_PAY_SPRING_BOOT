@@ -6,18 +6,47 @@ services:
     plan: free
     branch: main
     buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/om_pay-0.0.1-SNAPSHOT.jar
+    startCommand: java -Xmx512m -Xms256m -jar target/om_pay-0.0.1-SNAPSHOT.jar
     healthCheckPath: /actuator/health
     envVars:
+      # Base de données PostgreSQL
       - key: DATABASE_URL
         sync: false
       - key: DATABASE_USERNAME
         sync: false
       - key: DATABASE_PASSWORD
         sync: false
+      
+      # Configuration JWT
       - key: JWT_SECRET
         sync: false
       - key: JWT_EXPIRATION
         value: 86400000
+      
+      # Configuration Email (Brevo)
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@ompay.sn
+      - key: MAIL_FROM_NAME
+        value: OM Pay
+      
+      # Configuration Swagger
+      - key: SWAGGER_ENABLED
+        value: true
+      - key: SWAGGER_SERVER_PROD_URL
+        value: https://om-pay-spring-boot-1.onrender.com
+      - key: SWAGGER_SERVER_LOCAL_URL
+        value: http://localhost:8083
+      
+      # Profil Spring actif
       - key: SPRING_PROFILES_ACTIVE
         value: prod
+      
+      # Port du serveur (Render configure automatiquement)
+      - key: PORT
+        value: 8080
+      
+      # Configuration JVM
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx512m -Xms256m

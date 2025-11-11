@@ -1,4 +1,4 @@
-package om.example.om_pay.interfaces;
+package om.example.om_pay.service;
 
 import java.time.LocalDateTime;
 import java.util.List;

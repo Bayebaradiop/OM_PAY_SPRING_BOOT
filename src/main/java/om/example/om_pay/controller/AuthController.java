@@ -1,6 +1,5 @@
 package om.example.om_pay.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,10 +16,10 @@ import jakarta.validation.Valid;
 import om.example.om_pay.dto.request.ChangePasswordRequest;
 import om.example.om_pay.dto.request.LoginRequest;
 import om.example.om_pay.dto.request.RegisterRequest;
-import om.example.om_pay.dto.response.ApiResponse;
+import om.example.om_pay.dto.request.VerifyCodeSecretRequest;
 import om.example.om_pay.dto.response.AuthResponse;
 import om.example.om_pay.dto.response.UtilisateurResponse;
-import om.example.om_pay.interfaces.IAuthService;
+import om.example.om_pay.service.IAuthService;
 import om.example.om_pay.model.Utilisateur;
 import om.example.om_pay.repository.UtilisateurRepository;
 import om.example.om_pay.utils.CookieUtil;
@@ -32,81 +31,72 @@ import om.example.om_pay.utils.CookieUtil;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private IAuthService authService;
+    private final IAuthService authService;
+    private final UtilisateurRepository utilisateurRepository;
+    private final CookieUtil cookieUtil;
 
-    @Autowired
-    private UtilisateurRepository utilisateurRepository;
-
-    @Autowired
-    private CookieUtil cookieUtil;
-
- 
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthResponse>> register(
-            @Valid @RequestBody RegisterRequest request,
-            HttpServletResponse response) {
-        
-        AuthResponse authResponse = authService.register(request);
-        
-        cookieUtil.createJwtCookie(authResponse.getToken(), response);
-       
-        ApiResponse<AuthResponse> apiResponse = ApiResponse.success(
-            "Inscription réussie. Token disponible dans cookie et réponse.",
-            authResponse
-        );
-        
-        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    public AuthController(
+        IAuthService authService,
+        UtilisateurRepository utilisateurRepository,
+        CookieUtil cookieUtil
+    ) {
+        this.authService = authService;
+        this.utilisateurRepository = utilisateurRepository;
+        this.cookieUtil = cookieUtil;
     }
 
-    /**
-     * Connexion d'un utilisateur
-     * POST /api/auth/login
-     * Token stocké dans cookie HTTP-only ET retourné dans la réponse
-     */
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(
+            @Valid @RequestBody RegisterRequest request) {
+        
+        AuthResponse authResponse = authService.register(request);
+        // Pas de cookie JWT car le compte nécessite validation du code secret
+        
+        return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+    }
+    
+    @PostMapping("/verify-code-secret")
+    public ResponseEntity<AuthResponse> verifyCodeSecret(
+            @Valid @RequestBody VerifyCodeSecretRequest request,
+            HttpServletResponse response) {
+        
+        AuthResponse authResponse = authService.verifierCodeSecret(request);
+        
+        // Créer le cookie JWT après validation du code secret
+        if (authResponse.getToken() != null) {
+            cookieUtil.createJwtCookie(authResponse.getToken(), response);
+        }
+        
+        return ResponseEntity.ok(authResponse);
+    }
+    
+    @PostMapping("/resend-code-secret")
+    public ResponseEntity<Void> resendCodeSecret(@org.springframework.web.bind.annotation.RequestParam String telephone) {
+        authService.renvoyerCodeSecret(telephone);
+        return ResponseEntity.ok().build();
+    }
+
+
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(
+    public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response) {
         
         AuthResponse authResponse = authService.login(request);
-        
-        // Stocker le token dans un cookie HTTP-only pour les clients web
         cookieUtil.createJwtCookie(authResponse.getToken(), response);
         
-        // Garder le token dans la réponse pour Swagger/Postman
-        // Les clients peuvent choisir d'utiliser le cookie ou le header Authorization
-        
-        ApiResponse<AuthResponse> apiResponse = ApiResponse.success(
-            "Connexion réussie. Token disponible dans cookie et réponse.",
-            authResponse
-        );
-        
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.ok(authResponse);
     }
 
-    /**
-     * Changement de mot de passe
-     * POST /api/auth/change-password
-     */
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(request);
-        
-        ApiResponse<String> response = ApiResponse.success(
-            "Mot de passe changé avec succès",
-            null
-        );
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
-    /**
-     * Obtenir les informations de l'utilisateur connecté
-     * GET /api/auth/me
-     */
+   
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UtilisateurResponse>> getCurrentUser() {
+    public ResponseEntity<UtilisateurResponse> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String telephone = authentication.getName();
         
@@ -124,45 +114,21 @@ public class AuthController {
         userResponse.setStatut(utilisateur.getStatut());
         userResponse.setDateCreation(utilisateur.getDateCreation());
         
-        ApiResponse<UtilisateurResponse> response = ApiResponse.success(userResponse);
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userResponse);
     }
 
-    /**
-     * Rafraîchir le token JWT
-     * POST /api/auth/refresh-token
-     */
+  
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@RequestHeader("Authorization") String token) {
-        // Extraire le token du header "Bearer <token>"
+    public ResponseEntity<AuthResponse> refreshToken(@RequestHeader("Authorization") String token) {
         String jwt = token.substring(7);
-        
         AuthResponse authResponse = authService.refreshToken(jwt);
-        
-        ApiResponse<AuthResponse> response = ApiResponse.success(
-            "Token rafraîchi avec succès",
-            authResponse
-        );
-        
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authResponse);
     }
 
-    /**
-     * Déconnexion
-     * POST /api/auth/logout
-     * Supprime le cookie JWT
-     */
+ 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout(HttpServletResponse response) {
-        // Supprimer le cookie JWT
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
         cookieUtil.deleteJwtCookie(response);
-        
-        ApiResponse<String> apiResponse = ApiResponse.success(
-            "Déconnexion réussie. Cookie supprimé.",
-            null
-        );
-        
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.ok().build();
     }
 }

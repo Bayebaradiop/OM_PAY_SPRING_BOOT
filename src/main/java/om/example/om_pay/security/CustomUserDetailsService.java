@@ -1,8 +1,8 @@
 package om.example.om_pay.security;
 
-import om.example.om_pay.model.Utilisateur;
-import om.example.om_pay.repository.UtilisateurRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import om.example.om_pay.model.Utilisateur;
+import om.example.om_pay.repository.UtilisateurRepository;
 
 /**
  * Service de chargement des détails utilisateur pour Spring Security
@@ -20,8 +20,16 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UtilisateurRepository utilisateurRepository;
+
+    private final UtilisateurRepository utilisateurRepository;
+
+    
+
+    public CustomUserDetailsService(UtilisateurRepository utilisateurRepository) {
+        this.utilisateurRepository = utilisateurRepository;
+    }
+
+
 
     @Override
     public UserDetails loadUserByUsername(String telephone) throws UsernameNotFoundException {

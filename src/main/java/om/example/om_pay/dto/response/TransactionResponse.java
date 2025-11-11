@@ -2,6 +2,7 @@ package om.example.om_pay.dto.response;
 
 import java.time.LocalDateTime;
 
+import om.example.om_pay.model.Transaction;
 import om.example.om_pay.model.enums.StatutTransaction;
 import om.example.om_pay.model.enums.TypeTransaction;
 
@@ -137,5 +138,42 @@ public class TransactionResponse {
 
     public void setNouveauSolde(Double nouveauSolde) {
         this.nouveauSolde = nouveauSolde;
+    }
+
+    // Méthode factory pour créer un TransactionResponse depuis une Transaction
+    public static TransactionResponse fromTransaction(Transaction transaction) {
+        TransactionResponse response = new TransactionResponse();
+        
+        response.setId(transaction.getId());
+        response.setReference(transaction.getReference());
+        response.setTypeTransaction(transaction.getTypeTransaction());
+        response.setMontant(transaction.getMontant());
+        response.setFrais(transaction.getFrais());
+        response.setMontantTotal(transaction.getMontantTotal());
+        response.setStatut(transaction.getStatut());
+        response.setDateCreation(transaction.getDateTransaction());
+
+        // Informations du compte expéditeur
+        if (transaction.getCompteExpediteur() != null) {
+            response.setCompteExpediteur(transaction.getCompteExpediteur().getNumeroCompte());
+            response.setNouveauSolde(transaction.getCompteExpediteur().getSolde());
+        }
+
+        // Informations du compte destinataire
+        if (transaction.getCompteDestinataire() != null) {
+            response.setCompteDestinataire(transaction.getCompteDestinataire().getNumeroCompte());
+        }
+
+        // Informations du distributeur (pour dépôts et retraits)
+        if (transaction.getDistributeur() != null) {
+            response.setTelephoneDistributeur(transaction.getDistributeur().getTelephone());
+        }
+
+        // Informations du marchand (pour paiements)
+        if (transaction.getMarchand() != null) {
+            response.setNomMarchand(transaction.getMarchand().getNomCommercial());
+        }
+
+        return response;
     }
 }

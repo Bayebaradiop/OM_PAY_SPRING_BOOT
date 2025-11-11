@@ -12,10 +12,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import om.example.om_pay.model.enums.Statut;
 
 @Entity
 @Table(name = "marchand")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Marchand {
 
     @Id
@@ -26,123 +32,24 @@ public class Marchand {
     private String nomCommercial;
 
     @Column(unique = true, nullable = false)
-    private String numeroMarchand;  // Ex: 77123456789
+    private String numeroMarchand;
 
     @Column(unique = true, nullable = false)
-    private String codeMarchand;  // Ex: OM1234
+    private String codeMarchand; 
 
-    private String categorie;  // Restaurant, Boutique, Pharmacie, etc.
+    private String categorie;  
     private String adresse;
     private String email;
 
     @Enumerated(EnumType.STRING)
-    private Statut statut;  // ACTIF, INACTIF
+    private Statut statut;  
 
     @Column(nullable = false)
-    private Double commission = 0.0;  // % de commission sur chaque paiement
+    private Double commission = 0.0; 
 
     private LocalDateTime dateCreation = LocalDateTime.now();
     private LocalDateTime dateModification;
 
     @OneToMany(mappedBy = "marchand")
     private List<Transaction> transactions;
-
-    public Marchand() {}
-
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNomCommercial() {
-        return nomCommercial;
-    }
-
-    public void setNomCommercial(String nomCommercial) {
-        this.nomCommercial = nomCommercial;
-    }
-
-    public String getNumeroMarchand() {
-        return numeroMarchand;
-    }
-
-    public void setNumeroMarchand(String numeroMarchand) {
-        this.numeroMarchand = numeroMarchand;
-    }
-
-    public String getCodeMarchand() {
-        return codeMarchand;
-    }
-
-    public void setCodeMarchand(String codeMarchand) {
-        this.codeMarchand = codeMarchand;
-    }
-
-    public String getCategorie() {
-        return categorie;
-    }
-
-    public void setCategorie(String categorie) {
-        this.categorie = categorie;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Statut getStatut() {
-        return statut;
-    }
-
-    public void setStatut(Statut statut) {
-        this.statut = statut;
-    }
-
-    public Double getCommission() {
-        return commission;
-    }
-
-    public void setCommission(Double commission) {
-        this.commission = commission;
-    }
-
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public LocalDateTime getDateModification() {
-        return dateModification;
-    }
-
-    public void setDateModification(LocalDateTime dateModification) {
-        this.dateModification = dateModification;
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
 }

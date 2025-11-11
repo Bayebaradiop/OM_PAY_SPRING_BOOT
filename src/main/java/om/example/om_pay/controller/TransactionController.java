@@ -3,7 +3,6 @@ package om.example.om_pay.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,71 +18,69 @@ import om.example.om_pay.dto.request.DepotRequest;
 import om.example.om_pay.dto.request.PaiementRequest;
 import om.example.om_pay.dto.request.RetraitRequest;
 import om.example.om_pay.dto.request.TransfertRequest;
-import om.example.om_pay.dto.response.ApiResponse;
 import om.example.om_pay.dto.response.TransactionResponse;
-import om.example.om_pay.interfaces.ITransactionService;
+import om.example.om_pay.service.ITransactionService;
 
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
-    @Autowired
-    private ITransactionService transactionService;
+    private final ITransactionService transactionService;
+
+    public TransactionController(ITransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     /**
      * Effectuer un transfert entre clients
      */
     @PostMapping("/transfert")
-    public ResponseEntity<ApiResponse<TransactionResponse>> transfert(@Valid @RequestBody TransfertRequest request) {
+    public ResponseEntity<TransactionResponse> transfert(@Valid @RequestBody TransfertRequest request) {
         TransactionResponse response = transactionService.transfert(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true, "Transfert effectué avec succès", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Effectuer un dépôt (distributeur -> client)
      */
     @PostMapping("/depot")
-    public ResponseEntity<ApiResponse<TransactionResponse>> depot(@Valid @RequestBody DepotRequest request) {
+    public ResponseEntity<TransactionResponse> depot(@Valid @RequestBody DepotRequest request) {
         TransactionResponse response = transactionService.depot(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true, "Dépôt effectué avec succès", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Effectuer un retrait (client -> distributeur)
      */
     @PostMapping("/retrait")
-    public ResponseEntity<ApiResponse<TransactionResponse>> retrait(@Valid @RequestBody RetraitRequest request) {
+    public ResponseEntity<TransactionResponse> retrait(@Valid @RequestBody RetraitRequest request) {
         TransactionResponse response = transactionService.retrait(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true, "Retrait effectué avec succès", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Effectuer un paiement marchand
      */
     @PostMapping("/paiement")
-    public ResponseEntity<ApiResponse<TransactionResponse>> paiement(@Valid @RequestBody PaiementRequest request) {
+    public ResponseEntity<TransactionResponse> paiement(@Valid @RequestBody PaiementRequest request) {
         TransactionResponse response = transactionService.paiement(request);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true, "Paiement effectué avec succès", response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
      * Récupérer l'historique des transactions d'un compte
      */
     @GetMapping("/historique/{numeroCompte}")
-    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getHistorique(@PathVariable String numeroCompte) {
+    public ResponseEntity<List<TransactionResponse>> getHistorique(@PathVariable String numeroCompte) {
         List<TransactionResponse> transactions = transactionService.getHistorique(numeroCompte);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Historique récupéré avec succès", transactions));
+        return ResponseEntity.ok(transactions);
     }
 
     /**
      * Récupérer l'historique par période
      */
     @GetMapping("/historique/{numeroCompte}/periode")
-    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getHistoriqueByPeriode(
+    public ResponseEntity<List<TransactionResponse>> getHistoriqueByPeriode(
             @PathVariable String numeroCompte,
             @RequestParam String dateDebut,
             @RequestParam String dateFin) {
@@ -92,15 +89,15 @@ public class TransactionController {
         LocalDateTime fin = LocalDateTime.parse(dateFin);
         
         List<TransactionResponse> transactions = transactionService.getHistoriqueByPeriode(numeroCompte, debut, fin);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Historique récupéré avec succès", transactions));
+        return ResponseEntity.ok(transactions);
     }
 
     /**
      * Annuler une transaction
      */
     @PostMapping("/annuler/{reference}")
-    public ResponseEntity<ApiResponse<String>> annuler(@PathVariable String reference) {
+    public ResponseEntity<Void> annuler(@PathVariable String reference) {
         transactionService.annuler(reference);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Transaction annulée avec succès", null));
+        return ResponseEntity.ok().build();
     }
 }

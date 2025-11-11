@@ -2,6 +2,7 @@ package om.example.om_pay.dto.response;
 
 import java.time.LocalDateTime;
 
+import om.example.om_pay.model.Compte;
 import om.example.om_pay.model.enums.Statut;
 import om.example.om_pay.model.enums.TypeCompte;
 
@@ -83,5 +84,25 @@ public class CompteResponse {
 
     public void setDateCreation(LocalDateTime dateCreation) {
         this.dateCreation = dateCreation;
+    }
+
+    // Méthode factory pour créer un CompteResponse depuis un Compte
+    public static CompteResponse fromCompte(Compte compte) {
+        CompteResponse response = new CompteResponse();
+        response.setId(compte.getId());
+        response.setNumeroCompte(compte.getNumeroCompte());
+        response.setTypeCompte(compte.getTypeCompte());
+        response.setSolde(compte.getSolde());
+        response.setStatut(compte.getStatut());
+        response.setDateCreation(compte.getDateCreation());
+        
+        if (compte.getUtilisateur() != null) {
+            response.setTelephoneProprietaire(compte.getUtilisateur().getTelephone());
+            response.setNomProprietaire(
+                compte.getUtilisateur().getNom() + " " + compte.getUtilisateur().getPrenom()
+            );
+        }
+        
+        return response;
     }
 }

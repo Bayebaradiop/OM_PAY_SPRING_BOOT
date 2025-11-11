@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import om.example.om_pay.dto.response.ApiResponse;
+import om.example.om_pay.config.ApiResponse;
 
 /**
  * Gère les erreurs d'authentification en renvoyant une réponse JSON

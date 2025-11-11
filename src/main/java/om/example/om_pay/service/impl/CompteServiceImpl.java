@@ -1,37 +1,44 @@
 package om.example.om_pay.service.impl;
 
 import java.util.List;
-import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import om.example.om_pay.dto.response.CompteResponse;
 import om.example.om_pay.exception.BadRequestException;
 import om.example.om_pay.exception.ResourceNotFoundException;
-import om.example.om_pay.exception.UnauthorizedException;
-import om.example.om_pay.interfaces.ICompteService;
+import om.example.om_pay.service.ICompteService;
 import om.example.om_pay.model.Compte;
 import om.example.om_pay.model.Utilisateur;
 import om.example.om_pay.model.enums.Statut;
 import om.example.om_pay.repository.CompteRepository;
 import om.example.om_pay.repository.UtilisateurRepository;
+import om.example.om_pay.utils.ReferenceGeneratorService;
+import om.example.om_pay.validations.AccountValidationService;
 
 @Service
 public class CompteServiceImpl implements ICompteService {
 
-    @Autowired
-    private CompteRepository compteRepository;
+    private final CompteRepository compteRepository;
+    private final UtilisateurRepository utilisateurRepository;
+    private final ReferenceGeneratorService referenceGenerator;
+    private final AccountValidationService accountValidation;
 
-    @Autowired
-    private UtilisateurRepository utilisateurRepository;
+    public CompteServiceImpl(
+            CompteRepository compteRepository,
+            UtilisateurRepository utilisateurRepository,
+            ReferenceGeneratorService referenceGenerator,
+            AccountValidationService accountValidation) {
+        this.compteRepository = compteRepository;
+        this.utilisateurRepository = utilisateurRepository;
+        this.referenceGenerator = referenceGenerator;
+        this.accountValidation = accountValidation;
+    }
 
     @Override
     public Double consulterSolde(String numeroCompte) {
-        Compte compte = getCompteWithPermission(numeroCompte);
+        Compte compte = accountValidation.getCompteWithPermission(numeroCompte);
         return compte.getSolde();
     }
 
@@ -52,7 +59,7 @@ public class CompteServiceImpl implements ICompteService {
     public List<CompteResponse> getComptesByUtilisateur(Long utilisateurId) {
         List<Compte> comptes = compteRepository.findByUtilisateurId(utilisateurId);
         return comptes.stream()
-                .map(this::mapToResponse)
+                .map(CompteResponse::fromCompte)
                 .collect(java.util.stream.Collectors.toList());
     }
 
@@ -73,7 +80,7 @@ public class CompteServiceImpl implements ICompteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
 
         Compte compte = new Compte();
-        compte.setNumeroCompte(genererNumeroCompte());
+        compte.setNumeroCompte(referenceGenerator.genererNumeroCompte());
         compte.setTypeCompte(typeCompte);
         compte.setSolde(0.0);
         compte.setStatut(Statut.ACTIF);
@@ -117,7 +124,7 @@ public class CompteServiceImpl implements ICompteService {
     @Override
     @Transactional
     public void bloquer(String numeroCompte) {
-        Compte compte = getCompteWithPermission(numeroCompte);
+        Compte compte = accountValidation.getCompteWithPermission(numeroCompte);
         compte.setStatut(Statut.INACTIF);
         compteRepository.save(compte);
     }
@@ -125,62 +132,8 @@ public class CompteServiceImpl implements ICompteService {
     @Override
     @Transactional
     public void debloquer(String numeroCompte) {
-        Compte compte = getCompteWithPermission(numeroCompte);
+        Compte compte = accountValidation.getCompteWithPermission(numeroCompte);
         compte.setStatut(Statut.ACTIF);
         compteRepository.save(compte);
-    }
-
-    // ===== MÉTHODES UTILITAIRES =====
-
-    /**
-     * Récupère un compte et vérifie que l'utilisateur connecté est le propriétaire
-     */
-    private Compte getCompteWithPermission(String numeroCompte) {
-        Utilisateur currentUser = getCurrentUser();
-        
-        Compte compte = compteRepository.findByNumeroCompte(numeroCompte)
-                .orElseThrow(() -> new ResourceNotFoundException("Compte non trouvé"));
-
-        // Vérifier que le compte appartient bien à l'utilisateur
-        if (!compte.getUtilisateur().getId().equals(currentUser.getId())) {
-            throw new UnauthorizedException("Accès non autorisé à ce compte");
-        }
-
-        return compte;
-    }
-
-    /**
-     * Récupère l'utilisateur connecté
-     */
-    private Utilisateur getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String telephone = authentication.getName();
-
-        return utilisateurRepository.findByTelephone(telephone)
-                .orElseThrow(() -> new UnauthorizedException("Utilisateur non authentifié"));
-    }
-
-    /**
-     * Convertit un Compte en CompteResponse
-     */
-    private CompteResponse mapToResponse(Compte compte) {
-        CompteResponse response = new CompteResponse();
-        response.setId(compte.getId());
-        response.setNumeroCompte(compte.getNumeroCompte());
-        response.setTypeCompte(compte.getTypeCompte());
-        response.setSolde(compte.getSolde());
-        response.setStatut(compte.getStatut());
-        return response;
-    }
-
-    /**
-     * Génère un numéro de compte unique
-     */
-    private String genererNumeroCompte() {
-        String numeroCompte;
-        do {
-            numeroCompte = "77" + String.format("%07d", new Random().nextInt(10000000));
-        } while (compteRepository.existsByNumeroCompte(numeroCompte));
-        return numeroCompte;
     }
 }

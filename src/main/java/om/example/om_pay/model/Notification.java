@@ -12,10 +12,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import om.example.om_pay.model.enums.TypeNotification;
 
 @Entity
 @Table(name = "notification")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
 
     @Id
@@ -42,71 +48,4 @@ public class Notification {
     private Boolean lu = false;
 
     private LocalDateTime dateEnvoi = LocalDateTime.now();
-
-    public Notification() {}
-
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
-    }
-
-    public void setUtilisateur(Utilisateur utilisateur) {
-        this.utilisateur = utilisateur;
-    }
-
-    public Transaction getTransaction() {
-        return transaction;
-    }
-
-    public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
-    }
-
-    public String getTitre() {
-        return titre;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public TypeNotification getType() {
-        return type;
-    }
-
-    public void setType(TypeNotification type) {
-        this.type = type;
-    }
-
-    public Boolean getLu() {
-        return lu;
-    }
-
-    public void setLu(Boolean lu) {
-        this.lu = lu;
-    }
-
-    public LocalDateTime getDateEnvoi() {
-        return dateEnvoi;
-    }
-
-    public void setDateEnvoi(LocalDateTime dateEnvoi) {
-        this.dateEnvoi = dateEnvoi;
-    }
 }

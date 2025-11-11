@@ -9,20 +9,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 import om.example.om_pay.dto.request.UpdateUtilisateurRequest;
 import om.example.om_pay.dto.response.UtilisateurResponse;
+import om.example.om_pay.exception.BadRequestException;
 import om.example.om_pay.exception.ResourceNotFoundException;
 import om.example.om_pay.exception.UnauthorizedException;
-import om.example.om_pay.interfaces.IUtilisateurService;
+import om.example.om_pay.service.IUtilisateurService;
 import om.example.om_pay.model.Utilisateur;
 import om.example.om_pay.repository.UtilisateurRepository;
 
 @Service
 public class UtilisateurServiceImpl implements IUtilisateurService {
 
-    @Autowired
-    private UtilisateurRepository utilisateurRepository;
+    
+    private final UtilisateurRepository utilisateurRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    
+    private final PasswordEncoder passwordEncoder;
+
+    public UtilisateurServiceImpl(
+
+    UtilisateurRepository utilisateurRepository,
+    PasswordEncoder passwordEncoder
+
+    )
+    {
+    this.utilisateurRepository=utilisateurRepository;
+    this.passwordEncoder=passwordEncoder;
+    }
 
     @Override
     public Utilisateur getById(Long id) {

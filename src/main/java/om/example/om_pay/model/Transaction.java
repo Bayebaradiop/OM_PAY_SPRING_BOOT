@@ -12,11 +12,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import om.example.om_pay.model.enums.StatutTransaction;
 import om.example.om_pay.model.enums.TypeTransaction;
 
 @Entity
 @Table(name = "transaction")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Transaction {
 
     @Id
@@ -69,127 +75,4 @@ public class Transaction {
     private LocalDateTime dateTransaction = LocalDateTime.now();
 
     private LocalDateTime dateTraitement;  // Quand la transaction a été complétée
-
-    public Transaction() {}
-
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public TypeTransaction getTypeTransaction() {
-        return typeTransaction;
-    }
-
-    public void setTypeTransaction(TypeTransaction typeTransaction) {
-        this.typeTransaction = typeTransaction;
-    }
-
-    public Double getMontant() {
-        return montant;
-    }
-
-    public void setMontant(Double montant) {
-        this.montant = montant;
-    }
-
-    public Double getFrais() {
-        return frais;
-    }
-
-    public void setFrais(Double frais) {
-        this.frais = frais;
-    }
-
-    public Double getMontantTotal() {
-        return montantTotal;
-    }
-
-    public void setMontantTotal(Double montantTotal) {
-        this.montantTotal = montantTotal;
-    }
-
-    public Compte getCompteExpediteur() {
-        return compteExpediteur;
-    }
-
-    public void setCompteExpediteur(Compte compteExpediteur) {
-        this.compteExpediteur = compteExpediteur;
-    }
-
-    public Compte getCompteDestinataire() {
-        return compteDestinataire;
-    }
-
-    public void setCompteDestinataire(Compte compteDestinataire) {
-        this.compteDestinataire = compteDestinataire;
-    }
-
-    public Marchand getMarchand() {
-        return marchand;
-    }
-
-    public void setMarchand(Marchand marchand) {
-        this.marchand = marchand;
-    }
-
-    public Utilisateur getDistributeur() {
-        return distributeur;
-    }
-
-    public void setDistributeur(Utilisateur distributeur) {
-        this.distributeur = distributeur;
-    }
-
-    public StatutTransaction getStatut() {
-        return statut;
-    }
-
-    public void setStatut(StatutTransaction statut) {
-        this.statut = statut;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getMessageErreur() {
-        return messageErreur;
-    }
-
-    public void setMessageErreur(String messageErreur) {
-        this.messageErreur = messageErreur;
-    }
-
-    public LocalDateTime getDateTransaction() {
-        return dateTransaction;
-    }
-
-    public void setDateTransaction(LocalDateTime dateTransaction) {
-        this.dateTransaction = dateTransaction;
-    }
-
-    public LocalDateTime getDateTraitement() {
-        return dateTraitement;
-    }
-
-    public void setDateTraitement(LocalDateTime dateTraitement) {
-        this.dateTraitement = dateTraitement;
-    }
 }

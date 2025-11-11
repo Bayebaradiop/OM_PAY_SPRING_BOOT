@@ -1,6 +1,5 @@
 package om.example.om_pay.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,14 +24,19 @@ import om.example.om_pay.middleware.JwtAuthenticationFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CorsConfig corsConfig;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    private CorsConfig corsConfig;
+    public SecurityConfig(
+        JwtAuthenticationEntryPoint unauthorizedHandler,
+        JwtAuthenticationFilter jwtAuthenticationFilter,
+        CorsConfig corsConfig
+    ) {
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.corsConfig = corsConfig;
+    }
 
     /**
      * Encodeur de mots de passe BCrypt
@@ -61,19 +65,22 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Endpoints publics d'authentification
-                .requestMatchers("/api/auth/**").permitAll()
+                // Endpoints Actuator (Health Check pour Render) - En premier
+                .requestMatchers("/actuator/**").permitAll()
                 
                 // Endpoints Swagger/OpenAPI publics
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
+                    "/v3/**",
+                    "/swagger-resources/**",
+                    "/webjars/**",
                     "/openapi.yaml"
                 ).permitAll()
                 
-                // Endpoints Actuator (Health Check pour Render)
-                .requestMatchers("/actuator/**").permitAll()
+                // Endpoints publics d'authentification
+                .requestMatchers("/api/auth/**").permitAll()
                 
                 // Endpoints admin
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

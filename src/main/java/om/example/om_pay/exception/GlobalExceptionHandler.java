@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import om.example.om_pay.dto.response.ApiResponse;
+import om.example.om_pay.config.ApiResponse;
 
 /**
  * Gestionnaire global des exceptions
