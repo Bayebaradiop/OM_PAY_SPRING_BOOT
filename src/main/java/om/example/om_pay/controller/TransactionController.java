@@ -36,9 +36,6 @@ public class TransactionController {
      */
     @PostMapping("/transfert")
     public ResponseEntity<TransactionResponse> transfert(@Valid @RequestBody TransfertRequest request) {
-        if (!request.isValid()) {
-            throw new IllegalArgumentException("Veuillez fournir soit un téléphone, soit un code QR pour le destinataire");
-        }
         TransactionResponse response = transactionService.transfert(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -48,9 +45,6 @@ public class TransactionController {
      */
     @PostMapping("/depot")
     public ResponseEntity<TransactionResponse> depot(@Valid @RequestBody DepotRequest request) {
-        if (!request.isValid()) {
-            throw new IllegalArgumentException("Veuillez fournir soit un téléphone, soit un code QR");
-        }
         TransactionResponse response = transactionService.depot(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -60,9 +54,6 @@ public class TransactionController {
      */
     @PostMapping("/retrait")
     public ResponseEntity<TransactionResponse> retrait(@Valid @RequestBody RetraitRequest request) {
-        if (!request.isValid()) {
-            throw new IllegalArgumentException("Veuillez fournir soit un téléphone, soit un code QR");
-        }
         TransactionResponse response = transactionService.retrait(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -72,9 +63,6 @@ public class TransactionController {
      */
     @PostMapping("/paiement")
     public ResponseEntity<TransactionResponse> paiement(@Valid @RequestBody PaiementRequest request) {
-        if (!request.isValid()) {
-            throw new IllegalArgumentException("Veuillez fournir soit un code marchand, soit un code QR");
-        }
         TransactionResponse response = transactionService.paiement(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

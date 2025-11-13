@@ -4,22 +4,12 @@ import om.example.om_pay.validations.annotations.ValidMontant;
 
 public class PaiementRequest {
 
+    // Un seul de ces deux champs doit être fourni
     private String codeMarchand;
-    
     private String codeQr;
-    
-    private String description;
 
     @ValidMontant(min = 100, max = 1000000)
     private Double montant;
-    
-    /**
-     * Validation personnalisée: au moins un des deux (codeMarchand ou codeQr) doit être fourni
-     */
-    public boolean isValid() {
-        return (codeMarchand != null && !codeMarchand.isBlank()) || 
-               (codeQr != null && !codeQr.isBlank());
-    }
 
     // Constructeurs
     public PaiementRequest() {
@@ -45,14 +35,6 @@ public class PaiementRequest {
 
     public void setCodeQr(String codeQr) {
         this.codeQr = codeQr;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Double getMontant() {

@@ -4,15 +4,12 @@ import om.example.om_pay.validations.annotations.ValidMontant;
 
 public class DepotRequest {
 
+    // Un seul de ces deux champs doit être fourni
     private String telephoneClient;
-    
-    // NOUVEAU : Support du QR code comme alternative au téléphone
     private String codeQr;
 
     @ValidMontant(min = 100, max = 5000000)
     private Double montant;
-    
-    private String description;
 
     // Constructeurs
     public DepotRequest() {
@@ -46,21 +43,5 @@ public class DepotRequest {
 
     public void setCodeQr(String codeQr) {
         this.codeQr = codeQr;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    /**
-     * Validation : au moins un des deux doit être fourni (téléphone OU QR code)
-     */
-    public boolean isValid() {
-        return (telephoneClient != null && !telephoneClient.isBlank()) 
-            || (codeQr != null && !codeQr.isBlank());
     }
 }
