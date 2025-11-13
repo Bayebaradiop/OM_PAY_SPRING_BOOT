@@ -68,6 +68,9 @@ public class SecurityConfig {
                 // Endpoints Actuator (Health Check pour Render) - En premier
                 .requestMatchers("/actuator/**").permitAll()
                 
+                // Error endpoint - doit être public pour le traitement des erreurs
+                .requestMatchers("/error").permitAll()
+                
                 // Endpoints Swagger/OpenAPI publics
                 .requestMatchers(
                     "/swagger-ui/**",
