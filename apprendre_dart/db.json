@@ -1,0 +1,146 @@
+{
+  "utilisateurs": [
+    {
+      "id": "1",
+      "nom": "Diop",
+      "prenom": "Moussa",
+      "telephone": "771719741",
+      "email": "moussa@test.com",
+      "motDePasse": "Passer123",
+      "codePin": "$2a$10$...",
+      "role": "CLIENT",
+      "statut": "ACTIF",
+      "premiereConnexion": false,
+      "dateCreation": "2025-11-12T10:00:00"
+    },
+    {
+      "id": "2",
+      "nom": "Ndiaye",
+      "prenom": "Abdou",
+      "telephone": "775551234",
+      "email": "abdou@test.com",
+      "motDePasse": "$2a$10$...",
+      "codePin": "$2a$10$...",
+      "role": "DISTRIBUTEUR",
+      "statut": "ACTIF",
+      "premiereConnexion": false,
+      "dateCreation": "2025-11-12T10:00:00"
+    },
+    {
+      "id": "3",
+      "nom": "Marchand",
+      "prenom": "Amadou",
+      "telephone": "771112233",
+      "email": "amadou@marchand.com",
+      "motDePasse": "Marchand123",
+      "codePin": "$2a$10$...",
+      "role": "MARCHAND",
+      "statut": "ACTIF",
+      "premiereConnexion": false,
+      "dateCreation": "2025-11-12T10:00:00"
+    }
+  ],
+  "comptes": [
+    {
+      "id": "1",
+      "numeroCompte": "OM8000380279",
+      "solde": 49440,
+      "typeCompte": "PRINCIPAL",
+      "statut": "ACTIF",
+      "utilisateurId": 1,
+      "dateCreation": "2025-11-12T10:00:00"
+    },
+    {
+      "id": "2",
+      "numeroCompte": "OM4274060223",
+      "solde": 500350,
+      "typeCompte": "PRINCIPAL",
+      "statut": "ACTIF",
+      "utilisateurId": 2,
+      "dateCreation": "2025-11-12T10:00:00"
+    },
+    {
+      "id": "3",
+      "numeroCompte": "OM7777777777",
+      "solde": 197,
+      "typeCompte": "PRINCIPAL",
+      "statut": "ACTIF",
+      "utilisateurId": 3,
+      "dateCreation": "2025-11-12T10:00:00"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "1",
+      "reference": "TXN123456789",
+      "typeTransaction": "TRANSFERT",
+      "montant": 5000,
+      "frais": 42.5,
+      "montantTotal": 5042.5,
+      "compteSourceId": 1,
+      "compteDestinataireId": 2,
+      "dateTransaction": "2025-11-12T10:30:00",
+      "statut": "COMPLETED"
+    },
+    {
+      "id": "c9a0",
+      "reference": "TXN176296643388224403",
+      "typeTransaction": "TRANSFERT",
+      "montant": 100,
+      "frais": 5,
+      "montantTotal": 105,
+      "compteSourceId": 1,
+      "compteDestinataireId": 2,
+      "dateTransaction": "2025-11-12T16:53:53.883238",
+      "statut": "REUSSI"
+    },
+    {
+      "id": "e711",
+      "reference": "TXN176296947362648603",
+      "typeTransaction": "TRANSFERT",
+      "montant": 250,
+      "frais": 5,
+      "montantTotal": 255,
+      "compteSourceId": 1,
+      "compteDestinataireId": 2,
+      "dateTransaction": "2025-11-12T17:44:33.627103",
+      "statut": "REUSSI"
+    },
+    {
+      "id": "1c92",
+      "reference": "PAY176302761654331040",
+      "typeTransaction": "PAIEMENT",
+      "montant": 200,
+      "frais": 3,
+      "montantTotal": 200,
+      "compteSourceId": 1,
+      "compteDestinataireId": 3,
+      "dateTransaction": "2025-11-13T09:53:36.543868",
+      "statut": "REUSSI"
+    }
+  ],
+  "qrcodes": [
+    {
+      "id": "1",
+      "codeQr": "QR434B512D054A4817",
+      "compteId": 1,
+      "actif": true,
+      "dateCreation": "2025-11-12T10:00:00",
+      "dateUtilisation": null,
+      "nombreUtilisations": 0
+    }
+  ],
+  "marchands": [
+    {
+      "id": "1",
+      "nomCommercial": "Boutique Chez Amadou",
+      "codeMarchand": "SHOP001",
+      "numeroMarchand": "771112233",
+      "adresse": "Dakar, Plateau",
+      "telephone": "771112233",
+      "tauxCommission": 1.5,
+      "utilisateurId": 3,
+      "dateCreation": "2025-11-12T10:00:00"
+    }
+  ]
+}

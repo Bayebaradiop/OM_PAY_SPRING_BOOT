@@ -3,12 +3,17 @@ package om.example.om_pay.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import om.example.om_pay.dto.response.CompteResponse;
+import om.example.om_pay.model.Compte;
+import om.example.om_pay.model.Utilisateur;
+import om.example.om_pay.repository.UtilisateurRepository;
 import om.example.om_pay.service.ICompteService;
 
 @RestController
@@ -16,13 +21,36 @@ import om.example.om_pay.service.ICompteService;
 public class CompteController {
 
     private final ICompteService compteService;
+    private final UtilisateurRepository utilisateurRepository;
 
-    public CompteController(ICompteService compteService) {
+    public CompteController(ICompteService compteService, UtilisateurRepository utilisateurRepository) {
         this.compteService = compteService;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     /**
-     * Consulter le solde d'un compte
+     * Consulter le solde de l'utilisateur connecté
+     * Endpoint automatique qui récupère le solde sans saisir de numéro de compte
+     */
+    @GetMapping("/mon-solde")
+    public ResponseEntity<Double> consulterMonSolde() {
+        // Récupérer l'utilisateur connecté depuis le contexte de sécurité
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String telephone = authentication.getName();
+        
+        // Trouver l'utilisateur
+        Utilisateur utilisateur = utilisateurRepository.findByTelephone(telephone)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
+        // Récupérer le compte principal de l'utilisateur
+        Compte compte = compteService.getComptePrincipal(utilisateur.getId());
+        
+        // Retourner le solde
+        return ResponseEntity.ok(compte.getSolde());
+    }
+
+    /**
+     * Consulter le solde d'un compte spécifique (ancien endpoint)
      */
     @GetMapping("/solde/{numeroCompte}")
     public ResponseEntity<Double> consulterSolde(@PathVariable String numeroCompte) {

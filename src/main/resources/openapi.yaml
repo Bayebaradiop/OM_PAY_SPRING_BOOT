@@ -16,13 +16,32 @@ info:
     3. Cliquez sur "Authorize" et collez le token
     4. Testez les endpoints protégés
     
-    ## Données de test (utilisateurs sans code PIN)
-    | Rôle | Nom | Téléphone | Mot de passe | Numéro de compte |
-    |------|-----|-----------|--------------|------------------|
-    | CLIENT | Moussa Diop | 771234567 | Password123! | OM8000380279 |
-    | CLIENT | Fatou Sarr | 779876543 | Pass123! | OM2665616523 |
-    | CLIENT | Cheikh Fall | 776543210 | Client123! | OM5432147504 |
-    | DISTRIBUTEUR | Abdou Ndiaye | 775551234 | Distrib123! | OM4274060223 |
+    ## Données de test (Code PIN: 123456 pour tous)
+    
+    ### CLIENTS
+    | Nom | Téléphone | Mot de passe | Numéro de compte | Solde |
+    |-----|-----------|--------------|------------------|-------|
+    | Moussa Diop | 771234567 | Password123! | OM8000380279 | 50,000 FCFA |
+    | Fatou Sarr | 779876543 | Pass123! | OM2665616523 | 25,000 FCFA |
+    | Cheikh Fall | 776543210 | Client123! | OM5432147504 | 100,000 FCFA |
+    
+    ### DISTRIBUTEURS
+    | Nom | Téléphone | Mot de passe | Numéro de compte | Solde |
+    |-----|-----------|--------------|------------------|-------|
+    | Abdou Ndiaye | 775551234 | Distrib123! | OM4274060223 | 500,000 FCFA |
+    | Mariama Kane | 778889999 | Distrib456! | (auto) | 750,000 FCFA |
+    
+    ### MARCHANDS
+    | Nom Commercial | Téléphone | Mot de passe | Code Marchand | Commission |
+    |----------------|-----------|--------------|---------------|------------|
+    | Boutique Chez Amadou | 771112233 | Marchand123! | SHOP001 | 1.5% |
+    | Pharmacie Yaye Fatou | 775556789 | Marchand456! | PHARM001 | 2.0% |
+    | Supermarché Al Baraka | 770001122 | Marchand789! | SUPER001 | 1.0% |
+    
+    ### ADMIN
+    | Nom | Téléphone | Mot de passe | Solde |
+    |-----|-----------|--------------|-------|
+    | System Admin | 771111111 | Admin123! | 1,000,000 FCFA |
     
 
   version: 1.0.0
@@ -78,30 +97,37 @@ components:
       properties:
         nom:
           type: string
-          example: Diop
+          description: "Nom de famille"
+          example: 'Sow'
         prenom:
           type: string
-          example: Moussa
+          description: "Prénom"
+          example: 'Aminata'
         telephone:
           type: string
           pattern: '^(77|78|76|70|75)[0-9]{7}$'
-          example: '771234567'
+          description: "Numéro de téléphone sénégalais (9 chiffres)"
+          example: '778889999'
         email:
           type: string
           format: email
-          example: moussa@test.com
+          description: "Adresse email"
+          example: 'aminata.sow@test.com'
         motDePasse:
           type: string
           format: password
-          example: Password123!
+          description: "Mot de passe (min 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial)"
+          example: 'Secure123!'
         codePin:
           type: string
           pattern: '^[0-9]{6}$'
-          example: '482915'
+          description: "Code PIN à 6 chiffres"
+          example: '123456'
         role:
           type: string
           enum: [CLIENT, DISTRIBUTEUR, MARCHAND, ADMIN]
-          example: CLIENT
+          description: "Rôle de l'utilisateur"
+          example: 'CLIENT'
 
     LoginRequest:
       type: object
@@ -111,11 +137,13 @@ components:
       properties:
         telephone:
           type: string
+          description: "Téléphone de l'utilisateur"
           example: '771234567'
         motDePasse:
           type: string
           format: password
-          example: Password123!
+          description: "Mot de passe de l'utilisateur"
+          example: 'Password123!'
 
     TransfertRequest:
       type: object
@@ -281,6 +309,37 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              nouveauClient:
+                summary: Inscription nouveau CLIENT
+                value:
+                  nom: "Sow"
+                  prenom: "Aminata"
+                  telephone: "777778888"
+                  email: "aminata.sow@test.com"
+                  motDePasse: "Secure123!"
+                  codePin: "123456"
+                  role: "CLIENT"
+              nouveauDistributeur:
+                summary: Inscription nouveau DISTRIBUTEUR
+                value:
+                  nom: "Gueye"
+                  prenom: "Ibrahima"
+                  telephone: "775559999"
+                  email: "ibrahima.gueye@distrib.com"
+                  motDePasse: "Distrib789!"
+                  codePin: "654321"
+                  role: "DISTRIBUTEUR"
+              nouveauMarchand:
+                summary: Inscription nouveau MARCHAND
+                value:
+                  nom: "Thiam"
+                  prenom: "Ousmane"
+                  telephone: "770002233"
+                  email: "ousmane@commerce.sn"
+                  motDePasse: "Marchand999!"
+                  codePin: "789012"
+                  role: "MARCHAND"
       responses:
         '201':
           description: Inscription réussie
@@ -303,21 +362,46 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginRequest'
             examples:
-              client:
-                summary: Connexion CLIENT (Moussa Diop)
+              clientMoussa:
+                summary: CLIENT - Moussa Diop (Solde: 50k)
                 value:
                   telephone: "771234567"
                   motDePasse: "Password123!"
-              distributeur:
-                summary: Connexion DISTRIBUTEUR (Abdou Ndiaye)
-                value:
-                  telephone: "775551234"
-                  motDePasse: "Distrib123!"
-              client2:
-                summary: Connexion CLIENT (Fatou Sarr)
+              clientFatou:
+                summary: CLIENT - Fatou Sarr (Solde: 25k)
                 value:
                   telephone: "779876543"
                   motDePasse: "Pass123!"
+              clientCheikh:
+                summary: CLIENT - Cheikh Fall (Solde: 100k)
+                value:
+                  telephone: "776543210"
+                  motDePasse: "Client123!"
+              distributeurAbdou:
+                summary: DISTRIBUTEUR - Abdou Ndiaye (Solde: 500k)
+                value:
+                  telephone: "775551234"
+                  motDePasse: "Distrib123!"
+              distributeurMariama:
+                summary: DISTRIBUTEUR - Mariama Kane (Solde: 750k)
+                value:
+                  telephone: "778889999"
+                  motDePasse: "Distrib456!"
+              marchandShop:
+                summary: MARCHAND - Boutique Chez Amadou (SHOP001)
+                value:
+                  telephone: "771112233"
+                  motDePasse: "Marchand123!"
+              marchandPharma:
+                summary: MARCHAND - Pharmacie Yaye Fatou (PHARM001)
+                value:
+                  telephone: "775556789"
+                  motDePasse: "Marchand456!"
+              admin:
+                summary: ADMIN - System Admin
+                value:
+                  telephone: "771111111"
+                  motDePasse: "Admin123!"
       responses:
         '200':
           description: Connexion réussie
@@ -363,11 +447,16 @@ paths:
             schema:
               $ref: '#/components/schemas/TransfertRequest'
             examples:
-              avecTelephone:
-                summary: Transfert avec téléphone
+              versF atou:
+                summary: Transfert vers Fatou Sarr (779876543)
                 value:
                   telephoneDestinataire: "779876543"
                   montant: 5000
+              versCheikh:
+                summary: Transfert vers Cheikh Fall (776543210)
+                value:
+                  telephoneDestinataire: "776543210"
+                  montant: 10000
               avecQrCode:
                 summary: Transfert avec QR Code
                 value:
@@ -398,16 +487,21 @@ paths:
             schema:
               $ref: '#/components/schemas/DepotRequest'
             examples:
-              avecTelephone:
-                summary: Dépôt avec téléphone
+              depotMoussa:
+                summary: Dépôt vers Moussa Diop (771234567)
                 value:
                   telephoneClient: "771234567"
                   montant: 50000
+              depotFatou:
+                summary: Dépôt vers Fatou Sarr (779876543)
+                value:
+                  telephoneClient: "779876543"
+                  montant: 25000
               avecQrCode:
                 summary: Dépôt avec QR Code
                 value:
                   codeQr: "QR434B512D054A4817"
-                  montant: 50000
+                  montant: 30000
       responses:
         '201':
           description: Dépôt réussi
@@ -429,16 +523,21 @@ paths:
             schema:
               $ref: '#/components/schemas/RetraitRequest'
             examples:
-              avecTelephone:
-                summary: Retrait avec téléphone
+              retraitMoussa:
+                summary: Retrait de Moussa Diop (771234567)
                 value:
                   telephoneClient: "771234567"
                   montant: 10000
+              retraitCheikh:
+                summary: Retrait de Cheikh Fall (776543210)
+                value:
+                  telephoneClient: "776543210"
+                  montant: 20000
               avecQrCode:
                 summary: Retrait avec QR Code
                 value:
                   codeQr: "QR434B512D054A4817"
-                  montant: 10000
+                  montant: 15000
       responses:
         '201':
           description: Retrait réussi
@@ -460,16 +559,26 @@ paths:
             schema:
               $ref: '#/components/schemas/PaiementRequest'
             examples:
-              avecCodeMarchand:
-                summary: Paiement avec code marchand
+              boutique:
+                summary: Paiement à Boutique Chez Amadou (SHOP001)
                 value:
                   codeMarchand: "SHOP001"
                   montant: 15000
+              pharmacie:
+                summary: Paiement à Pharmacie Yaye Fatou (PHARM001)
+                value:
+                  codeMarchand: "PHARM001"
+                  montant: 25000
+              supermarche:
+                summary: Paiement à Supermarché Al Baraka (SUPER001)
+                value:
+                  codeMarchand: "SUPER001"
+                  montant: 50000
               avecQrCode:
                 summary: Paiement avec QR Code
                 value:
                   codeQr: "QR434B512D054A4817"
-                  montant: 15000
+                  montant: 20000
       responses:
         '201':
           description: Paiement réussi
