@@ -8,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import om.example.om_pay.dto.response.CompteResponse;
 import om.example.om_pay.exception.BadRequestException;
 import om.example.om_pay.exception.ResourceNotFoundException;
-import om.example.om_pay.service.ICompteService;
 import om.example.om_pay.model.Compte;
 import om.example.om_pay.model.Utilisateur;
 import om.example.om_pay.model.enums.Statut;
 import om.example.om_pay.repository.CompteRepository;
 import om.example.om_pay.repository.UtilisateurRepository;
+import om.example.om_pay.service.ICompteService;
 import om.example.om_pay.utils.ReferenceGeneratorService;
 import om.example.om_pay.validations.AccountValidationService;
 
@@ -64,6 +64,7 @@ public class CompteServiceImpl implements ICompteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Compte getComptePrincipal(Long utilisateurId) {
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));

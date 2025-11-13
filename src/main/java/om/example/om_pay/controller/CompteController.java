@@ -30,41 +30,24 @@ public class CompteController {
 
     /**
      * Consulter le solde de l'utilisateur connecté
-     * Endpoint automatique qui récupère le solde sans saisir de numéro de compte
+     * Récupère automatiquement le numéro de compte principal de l'utilisateur
      */
-    @GetMapping("/mon-solde")
-    public ResponseEntity<?> consulterMonSolde() {
-        try {
-            // Récupérer l'utilisateur connecté depuis le contexte de sécurité
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String telephone = authentication.getName();
-            
-            // Trouver l'utilisateur
-            Utilisateur utilisateur = utilisateurRepository.findByTelephone(telephone)
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-            
-            // Récupérer le compte principal de l'utilisateur
-            Compte compte = compteService.getComptePrincipal(utilisateur.getId());
-            
-            // Retourner le solde
-            return ResponseEntity.ok(compte.getSolde());
-        } catch (Exception e) {
-            // Retourner une erreur explicite si le compte principal n'existe pas
-            return ResponseEntity.status(404)
-                    .body(java.util.Map.of(
-                            "success", false,
-                            "message", "Compte principal non trouvé pour cet utilisateur",
-                            "error", e.getMessage()
-                    ));
-        }
-    }
-
-    /**
-     * Consulter le solde d'un compte spécifique (ancien endpoint)
-     */
-    @GetMapping("/solde/{numeroCompte}")
-    public ResponseEntity<Double> consulterSolde(@PathVariable String numeroCompte) {
-        Double solde = compteService.consulterSolde(numeroCompte);
+    @GetMapping("/solde")
+    public ResponseEntity<Double> consulterSolde() {
+        // Récupérer l'utilisateur connecté depuis le contexte de sécurité
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String telephone = authentication.getName();
+        
+        // Trouver l'utilisateur
+        Utilisateur utilisateur = utilisateurRepository.findByTelephone(telephone)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
+        // Récupérer le compte principal de l'utilisateur
+        Compte compte = compteService.getComptePrincipal(utilisateur.getId());
+        
+        // Consulter le solde avec le numéro de compte récupéré
+        Double solde = compteService.consulterSolde(compte.getNumeroCompte());
+        
         return ResponseEntity.ok(solde);
     }
 
