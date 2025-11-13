@@ -49,6 +49,9 @@ application-local.properties
 .DS_Store
 Thumbs.db
 
+### Flutter/Dart Project ###
+apprendre_dart/
+
 ### Temporary Files ###
 *.tmp
 *.bak
