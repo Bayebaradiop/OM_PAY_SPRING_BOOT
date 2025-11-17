@@ -18,23 +18,29 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Origines autorisées (Frontend)
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000", 
-            "http://localhost:4200"
-        ));
+        // Origines autorisées (Frontend + Applications mobiles/console)
+        // En production sur Render, autorisez toutes les origines ou spécifiez celles nécessaires
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // Permet toutes les origines
         
         // Méthodes HTTP autorisées
         configuration.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "OPTIONS"
+            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
         ));
         
-        // Headers autorisés
-        configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", "Content-Type", "Accept"
+        // Headers autorisés (important pour JWT)
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Headers exposés (pour que le client puisse les lire)
+        configuration.setExposedHeaders(Arrays.asList(
+            "Authorization", 
+            "Content-Type",
+            "X-Total-Count"
         ));
         
+        // Autoriser l'envoi des credentials (cookies, headers d'auth)
         configuration.setAllowCredentials(true);
+        
+        // Cache de la configuration CORS (en secondes)
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
