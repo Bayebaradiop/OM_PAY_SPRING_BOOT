@@ -2,11 +2,15 @@ package om.example.om_pay.config;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class ApiResponse<T> {
 
     private boolean success;
     private String message;
     private T data;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
 
     // Constructeurs
