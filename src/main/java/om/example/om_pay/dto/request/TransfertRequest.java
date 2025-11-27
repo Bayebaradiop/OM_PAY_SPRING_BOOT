@@ -4,14 +4,12 @@ import om.example.om_pay.validations.annotations.ValidMontant;
 
 public class TransfertRequest {
 
-    // Un seul de ces deux champs doit être fourni
     private String telephoneDestinataire;
     private String codeQrDestinataire;
 
     @ValidMontant(min = 100, max = 1000000)
     private Double montant;
 
-    // Constructeurs
     public TransfertRequest() {
     }
 
@@ -20,7 +18,6 @@ public class TransfertRequest {
         this.montant = montant;
     }
 
-    // Getters et Setters
     public String getTelephoneDestinataire() {
         return telephoneDestinataire;
     }
