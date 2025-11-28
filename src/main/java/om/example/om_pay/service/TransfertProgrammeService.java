@@ -123,7 +123,7 @@ public class TransfertProgrammeService {
 
         } catch (Exception e) {
             messageErreur = e.getMessage();
-            System.err.println("❌ Échec du transfert programmé #" + transfertId + ": " + e.getMessage());
+            System.err.println(" Échec du transfert programmé #" + transfertId + ": " + e.getMessage());
         } finally {
             // Nettoyer le contexte de sécurité
             SecurityContextHolder.clearContext();

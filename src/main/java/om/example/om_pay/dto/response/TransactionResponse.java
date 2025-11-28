@@ -21,7 +21,7 @@ public class TransactionResponse {
     private String nomMarchand;
     private String description;
     private LocalDateTime dateCreation;
-    private Double nouveauSolde; // Nouveau solde de l'expéditeur après transaction
+    private Double nouveauSolde;
 
     // Constructeurs
     public TransactionResponse() {
