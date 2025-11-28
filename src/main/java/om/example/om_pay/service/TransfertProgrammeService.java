@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import om.example.om_pay.dto.request.TransfertRequest;
@@ -26,14 +27,17 @@ public class TransfertProgrammeService {
     private final TransfertProgrammeRepository transfertProgrammeRepository;
     private final UtilisateurRepository utilisateurRepository;
     private final ITransactionService transactionService;
+    private final org.springframework.context.ApplicationContext applicationContext;
 
     public TransfertProgrammeService(
             TransfertProgrammeRepository transfertProgrammeRepository,
             UtilisateurRepository utilisateurRepository,
-            ITransactionService transactionService) {
+            ITransactionService transactionService,
+            org.springframework.context.ApplicationContext applicationContext) {
         this.transfertProgrammeRepository = transfertProgrammeRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.transactionService = transactionService;
+        this.applicationContext = applicationContext;
     }
 
     @Transactional
@@ -92,10 +96,13 @@ public class TransfertProgrammeService {
         }
     }
 
-    @Transactional
     public void executerTransfertProgramme(TransfertProgramme transfert) {
         System.out.println("💸 Exécution du transfert programmé #" + transfert.getId() + 
             " de " + transfert.getMontant() + " FCFA vers " + transfert.getTelephoneDestinataire());
+
+        Long transfertId = transfert.getId();
+        boolean succes = false;
+        String messageErreur = null;
 
         try {
             // Créer une authentification temporaire pour l'utilisateur expéditeur
@@ -108,24 +115,44 @@ public class TransfertProgrammeService {
             request.setTelephoneDestinataire(transfert.getTelephoneDestinataire());
             request.setMontant(transfert.getMontant());
 
+            // Exécuter le transfert (dans sa propre transaction)
             transactionService.transfert(request);
-
-            transfert.setStatut(StatutTransfertProgramme.TERMINE);
-            transfert.setDateExecutionReelle(LocalDateTime.now());
-            transfertProgrammeRepository.save(transfert);
+            succes = true;
             
-            System.out.println("✅ Transfert programmé #" + transfert.getId() + " exécuté avec succès");
+            System.out.println("✅ Transfert programmé #" + transfertId + " exécuté avec succès");
 
         } catch (Exception e) {
-            transfert.setStatut(StatutTransfertProgramme.ECHOUE);
-            transfert.setMessageErreur(e.getMessage());
-            transfertProgrammeRepository.save(transfert);
-            
-            System.err.println("❌ Échec du transfert programmé #" + transfert.getId() + ": " + e.getMessage());
+            messageErreur = e.getMessage();
+            System.err.println("❌ Échec du transfert programmé #" + transfertId + ": " + e.getMessage());
         } finally {
             // Nettoyer le contexte de sécurité
             SecurityContextHolder.clearContext();
         }
+
+        // Mettre à jour le statut dans une nouvelle transaction
+        // On doit appeler via le proxy Spring pour activer REQUIRES_NEW
+        try {
+            TransfertProgrammeService proxy = applicationContext.getBean(TransfertProgrammeService.class);
+            proxy.mettreAJourStatutTransfert(transfertId, succes, messageErreur);
+        } catch (Exception e) {
+            System.err.println("⚠️ Erreur lors de la mise à jour du statut: " + e.getMessage());
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void mettreAJourStatutTransfert(Long transfertId, boolean succes, String messageErreur) {
+        TransfertProgramme transfert = transfertProgrammeRepository.findById(transfertId)
+            .orElseThrow(() -> new RuntimeException("Transfert programmé introuvable"));
+
+        if (succes) {
+            transfert.setStatut(StatutTransfertProgramme.TERMINE);
+            transfert.setDateExecutionReelle(LocalDateTime.now());
+        } else {
+            transfert.setStatut(StatutTransfertProgramme.ECHOUE);
+            transfert.setMessageErreur(messageErreur);
+        }
+
+        transfertProgrammeRepository.save(transfert);
     }
 
     public List<TransfertProgramme> listerMesTransfertsProgrammes() {
